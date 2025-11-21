@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   // process.cwd() might be undefined in some environments, handle gracefully if needed,
   // but typically valid in Node context of Vite.
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, (process as any).cwd(), '');
   
   return {
     plugins: [react()],

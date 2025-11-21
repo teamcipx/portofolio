@@ -1,44 +1,45 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
-import { PRODUCTS } from '../constants';
-import { DollarSign, Users, ShoppingBag, TrendingUp, Upload, Plus, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2 } from 'lucide-react';
 import { uploadImageToImgBB } from '../services/imgbbService';
-
-// Mock Data
-const SALES_DATA = [
-  { name: 'Mon', sales: 4000 },
-  { name: 'Tue', sales: 3000 },
-  { name: 'Wed', sales: 2000 },
-  { name: 'Thu', sales: 2780 },
-  { name: 'Fri', sales: 1890 },
-  { name: 'Sat', sales: 2390 },
-  { name: 'Sun', sales: 3490 },
-];
-
-const VISITOR_DATA = [
-  { name: 'Mon', visitors: 240 },
-  { name: 'Tue', visitors: 139 },
-  { name: 'Wed', visitors: 980 },
-  { name: 'Thu', visitors: 390 },
-  { name: 'Fri', visitors: 480 },
-  { name: 'Sat', visitors: 380 },
-  { name: 'Sun', visitors: 430 },
-];
+import { addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, getProducts, deleteProduct, getBlogs, deleteBlog } from '../services/dataService';
+import { Project, Product, BlogPost } from '../types';
 
 const Admin: React.FC = () => {
   const { user, isAdmin } = useAuth();
+  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'products' | 'blogs' | 'messages'>('projects');
   
-  // Upload State
+  // Data Lists
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+
+  // Form States
   const [uploading, setUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-  const [projectForm, setProjectForm] = useState({
-    title: '',
-    category: 'Branding',
-    description: ''
-  });
+  
+  // Generic Forms
+  const [projectForm, setProjectForm] = useState({ title: '', category: 'Branding', description: '' });
+  const [productForm, setProductForm] = useState({ title: '', type: 'Asset', price: '', description: '' });
+  const [blogForm, setBlogForm] = useState({ title: '', category: 'Design', excerpt: '', readTime: '5 min read' });
+
+  // Load Data
+  useEffect(() => {
+    if(isAdmin) {
+        refreshData();
+    }
+  }, [isAdmin, activeTab]);
+
+  const refreshData = async () => {
+      const [p, prod, b, m] = await Promise.all([getProjects(), getProducts(), getBlogs(), getMessages()]);
+      setProjects(p);
+      setProducts(prod);
+      setBlogs(b);
+      setMessages(m);
+  };
 
   if (!user || !isAdmin) {
     return <Navigate to="/login" replace />;
@@ -48,271 +49,214 @@ const Admin: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       setUploading(true);
       const url = await uploadImageToImgBB(e.target.files[0]);
-      if (url) {
-        setUploadedUrl(url);
-      }
+      if (url) setUploadedUrl(url);
       setUploading(false);
     }
   };
 
-  const handleAddProject = (e: React.FormEvent) => {
+  // Handlers
+  const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!uploadedUrl) {
-      alert("Please upload an image first!");
-      return;
-    }
-    
-    const newProject = {
-      ...projectForm,
-      imageUrl: uploadedUrl,
-      id: Date.now().toString()
-    };
-    
-    console.log("New Project Payload:", newProject);
-    alert(`Success! Project "${newProject.title}" ready to be saved to database. (See console)`);
-    
-    // Reset Form
+    if(!uploadedUrl) return alert("Upload image first");
+    await addProject({ ...projectForm, imageUrl: uploadedUrl } as any);
     setUploadedUrl(null);
     setProjectForm({ title: '', category: 'Branding', description: '' });
+    refreshData();
+    alert("Project Added");
   };
 
-  const StatCard = ({ title, value, icon: Icon, color }: any) => (
-    <div className="glass-card bg-white p-6 rounded-2xl flex items-center gap-4 transition-all duration-300 hover:transform hover:-translate-y-1">
-      <div className={`p-4 rounded-xl ${color} bg-opacity-10 text-${color.replace('bg-', '')}`}>
-        <Icon size={24} className={color.replace('bg-', 'text-')} />
-      </div>
-      <div>
-        <p className="text-gray-500 text-sm font-medium">{title}</p>
-        <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
-      </div>
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if(!uploadedUrl) return alert("Upload image first");
+    await addProduct({ ...productForm, price: Number(productForm.price), imageUrl: uploadedUrl, rating: 5 } as any);
+    setUploadedUrl(null);
+    setProductForm({ title: '', type: 'Asset', price: '', description: '' });
+    refreshData();
+    alert("Product Added");
+  };
+
+  const handleAddBlog = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if(!uploadedUrl) return alert("Upload image first");
+      await addBlog({ ...blogForm, imageUrl: uploadedUrl, date: new Date().toLocaleDateString() } as any);
+      setUploadedUrl(null);
+      setBlogForm({ title: '', category: 'Design', excerpt: '', readTime: '5 min' });
+      refreshData();
+      alert("Blog Published");
+  };
+
+  const handleDelete = async (id: string, type: 'project' | 'product' | 'blog') => {
+      if(!confirm("Are you sure?")) return;
+      if(type === 'project') await deleteProject(id);
+      if(type === 'product') await deleteProduct(id);
+      if(type === 'blog') await deleteBlog(id);
+      refreshData();
+  };
+
+  // Components
+  const FileUploader = () => (
+    <div className="relative border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors mb-4">
+        {uploadedUrl ? (
+            <div className="relative w-full">
+                <img src={uploadedUrl} alt="Preview" className="w-full h-32 object-cover rounded-lg" />
+                <button type="button" onClick={() => setUploadedUrl(null)} className="absolute top-1 right-1 bg-white p-1 rounded-full shadow text-red-500"><X size={14}/></button>
+            </div>
+        ) : (
+            <>
+                <input type="file" accept="image/*" onChange={handleFileChange} disabled={uploading} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                {uploading ? <Loader2 className="animate-spin text-brand-500"/> : <Upload className="text-gray-400 mb-2"/>}
+                <span className="text-xs text-gray-500">Upload Cover Image</span>
+            </>
+        )}
     </div>
   );
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-4">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-500 mt-1">Manage your portfolio, shop, and analytics.</p>
+            <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
+            <p className="text-gray-500">Content Management System</p>
           </div>
-          <div className="flex items-center gap-4">
-             <div className="text-right hidden md:block">
-                <p className="text-sm font-bold text-gray-900">{user.username}</p>
-                <p className="text-xs text-gray-500">Super Admin</p>
-             </div>
-             <div className="h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold border-2 border-white shadow-sm">
-                {user.username.charAt(0)}
-             </div>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <StatCard title="Total Revenue" value="$12,345" icon={DollarSign} color="bg-green-500" />
-          <StatCard title="Active Users" value="1,234" icon={Users} color="bg-blue-500" />
-          <StatCard title="Total Sales" value="456" icon={ShoppingBag} color="bg-brand-500" />
-          <StatCard title="Growth" value="+23%" icon={TrendingUp} color="bg-accent-500" />
-        </div>
-
-        {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-           
-           {/* Add New Project Form */}
-           <div className="lg:col-span-1">
-             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Plus size={20} className="text-brand-600"/> Add New Project
-                </h3>
-                
-                <form onSubmit={handleAddProject} className="space-y-5">
-                  {/* Image Upload Area */}
-                  <div className="relative border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors group">
-                    {uploadedUrl ? (
-                      <div className="relative w-full">
-                        <img src={uploadedUrl} alt="Preview" className="w-full h-48 object-cover rounded-xl shadow-sm" />
-                        <button 
-                          type="button"
-                          onClick={() => setUploadedUrl(null)}
-                          className="absolute top-2 right-2 bg-white/90 p-2 rounded-full shadow-md hover:bg-red-50 text-red-500 transition"
-                        >
-                          <X size={16} />
-                        </button>
-                        <div className="mt-2 flex items-center justify-center gap-1 text-xs text-green-600 font-medium">
-                            <span className="w-2 h-2 rounded-full bg-green-500"></span> Image Uploaded
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          onChange={handleFileChange}
-                          disabled={uploading}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed"
-                        />
-                        {uploading ? (
-                          <div className="flex flex-col items-center text-brand-600">
-                            <Loader2 size={32} className="animate-spin mb-2" />
-                            <span className="text-sm font-medium">Uploading to ImgBB...</span>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="bg-brand-50 p-4 rounded-full mb-3 text-brand-500 group-hover:scale-110 transition-transform">
-                              <Upload size={24} />
-                            </div>
-                            <p className="text-sm font-medium text-gray-900">Click to upload image</p>
-                            <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 10MB</p>
-                          </>
-                        )}
-                      </>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Project Title</label>
-                    <input 
-                      type="text" 
-                      required
-                      value={projectForm.title}
-                      onChange={e => setProjectForm({...projectForm, title: e.target.value})}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                      placeholder="e.g., Neon Branding"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                    <div className="relative">
-                      <select 
-                        value={projectForm.category}
-                        onChange={e => setProjectForm({...projectForm, category: e.target.value})}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none appearance-none transition-all"
-                      >
-                        <option>Branding</option>
-                        <option>Web Design</option>
-                        <option>Illustration</option>
-                        <option>Social Media</option>
-                      </select>
-                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                     <textarea 
-                        rows={3}
-                        required
-                        value={projectForm.description}
-                        onChange={e => setProjectForm({...projectForm, description: e.target.value})}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                        placeholder="Short description..."
-                     />
-                  </div>
-
+          <div className="flex gap-2">
+              {[
+                  { id: 'projects', icon: Briefcase, label: 'Projects' },
+                  { id: 'products', icon: ShoppingBag, label: 'Shop' },
+                  { id: 'blogs', icon: BookOpen, label: 'Blogs' },
+                  { id: 'messages', icon: MessageSquare, label: 'Messages' },
+              ].map(tab => (
                   <button 
-                    type="submit" 
-                    disabled={!uploadedUrl}
-                    className="w-full bg-gradient-to-r from-brand-600 to-accent-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-brand-200 hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === tab.id ? 'bg-brand-600 text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gray-100'}`}
                   >
-                    Publish Project
+                      <tab.icon size={18} /> <span className="hidden md:inline">{tab.label}</span>
                   </button>
-                </form>
-             </div>
-           </div>
-
-           {/* Charts Section */}
-           <div className="lg:col-span-2 flex flex-col gap-8">
-             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex-1">
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Sales Overview</h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={SALES_DATA}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8'}} />
-                      <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8'}} />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                        cursor={{ fill: '#f8fafc' }}
-                      />
-                      <Bar dataKey="sales" fill="#d946ef" radius={[6, 6, 0, 0]} barSize={40} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex-1">
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Visitor Traffic</h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={VISITOR_DATA}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8'}} />
-                      <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8'}} />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                      />
-                      <Line type="monotone" dataKey="visitors" stroke="#8b5cf6" strokeWidth={3} dot={{ r: 4, fill: '#8b5cf6', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6, strokeWidth: 0 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-           </div>
+              ))}
+          </div>
         </div>
 
-        {/* Product List */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
-            <h3 className="text-lg font-bold text-gray-900">Existing Products</h3>
-            <button className="text-sm text-brand-600 font-semibold hover:text-brand-700">View All</button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-100">
-              <thead className="bg-gray-50/50">
-                <tr>
-                  <th className="px-8 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Product</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Price</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Rating</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
-                {PRODUCTS.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50/50 transition">
-                    <td className="px-8 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
-                          <img className="h-full w-full object-cover" src={product.imageUrl} alt="" />
+        {/* Content Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Form Column (Left) - Only for Content tabs */}
+            {activeTab !== 'messages' && activeTab !== 'overview' && (
+                <div className="lg:col-span-1">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+                        <h2 className="text-xl font-bold mb-6 capitalize">Add New {activeTab.slice(0, -1)}</h2>
+                        
+                        {activeTab === 'projects' && (
+                            <form onSubmit={handleAddProject} className="space-y-4">
+                                <FileUploader />
+                                <input type="text" placeholder="Project Title" required className="w-full p-3 bg-gray-50 rounded-lg border-none focus:ring-2 ring-brand-500" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} />
+                                <select className="w-full p-3 bg-gray-50 rounded-lg border-none" value={projectForm.category} onChange={e => setProjectForm({...projectForm, category: e.target.value})}>
+                                    <option>Branding</option><option>Web Design</option><option>Illustration</option>
+                                </select>
+                                <textarea placeholder="Description" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} />
+                                <button type="submit" disabled={!uploadedUrl} className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 disabled:opacity-50">Publish Project</button>
+                            </form>
+                        )}
+
+                        {activeTab === 'products' && (
+                            <form onSubmit={handleAddProduct} className="space-y-4">
+                                <FileUploader />
+                                <input type="text" placeholder="Product Title" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={productForm.title} onChange={e => setProductForm({...productForm, title: e.target.value})} />
+                                <div className="flex gap-2">
+                                    <select className="flex-1 p-3 bg-gray-50 rounded-lg border-none" value={productForm.type} onChange={e => setProductForm({...productForm, type: e.target.value})}>
+                                        <option>Course</option><option>Asset</option>
+                                    </select>
+                                    <input type="number" placeholder="Price $" required className="w-24 p-3 bg-gray-50 rounded-lg border-none" value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} />
+                                </div>
+                                <textarea placeholder="Description" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} />
+                                <button type="submit" disabled={!uploadedUrl} className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 disabled:opacity-50">Add Product</button>
+                            </form>
+                        )}
+
+                        {activeTab === 'blogs' && (
+                             <form onSubmit={handleAddBlog} className="space-y-4">
+                                <FileUploader />
+                                <input type="text" placeholder="Article Title" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={blogForm.title} onChange={e => setBlogForm({...blogForm, title: e.target.value})} />
+                                <input type="text" placeholder="Category (e.g. Design)" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={blogForm.category} onChange={e => setBlogForm({...blogForm, category: e.target.value})} />
+                                <textarea placeholder="Excerpt / Content" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={blogForm.excerpt} onChange={e => setBlogForm({...blogForm, excerpt: e.target.value})} />
+                                <button type="submit" disabled={!uploadedUrl} className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 disabled:opacity-50">Publish Post</button>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* List Column (Right) */}
+            <div className={`${activeTab === 'messages' ? 'col-span-3' : 'lg:col-span-2'}`}>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 min-h-[500px]">
+                    <h3 className="text-lg font-bold mb-6 border-b pb-4 flex justify-between">
+                        <span>Existing {activeTab}</span>
+                        <span className="text-sm text-gray-500 font-normal">Live Data from Firebase</span>
+                    </h3>
+
+                    {activeTab === 'projects' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {projects.map(p => (
+                                <div key={p.id} className="flex items-center gap-4 p-3 border rounded-xl hover:bg-gray-50">
+                                    <img src={p.imageUrl} className="w-16 h-16 rounded-lg object-cover" />
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-bold truncate">{p.title}</h4>
+                                        <p className="text-xs text-gray-500">{p.category}</p>
+                                    </div>
+                                    <button onClick={() => handleDelete(p.id, 'project')} className="text-red-400 hover:text-red-600"><Trash2 size={18}/></button>
+                                </div>
+                            ))}
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-bold text-gray-900">{product.title}</div>
-                          <div className="text-xs text-gray-400">ID: #{product.id}</div>
+                    )}
+
+                    {activeTab === 'products' && (
+                        <div className="space-y-3">
+                             {products.map(p => (
+                                <div key={p.id} className="flex items-center gap-4 p-3 border rounded-xl hover:bg-gray-50">
+                                    <img src={p.imageUrl} className="w-12 h-12 rounded-lg object-cover" />
+                                    <div className="flex-1">
+                                        <h4 className="font-bold">{p.title}</h4>
+                                        <p className="text-xs text-gray-500">${p.price} • {p.type}</p>
+                                    </div>
+                                    <button onClick={() => handleDelete(p.id, 'product')} className="text-red-400 hover:text-red-600"><Trash2 size={18}/></button>
+                                </div>
+                            ))}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${product.type === 'Course' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                        {product.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                      ${product.price}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center gap-1">
-                      <span className="text-yellow-400">★</span> {product.rating}
-                    </td>
-                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-gray-400 hover:text-brand-600 transition mx-2">Edit</button>
-                      <button className="text-gray-400 hover:text-red-500 transition">Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    )}
+
+                    {activeTab === 'blogs' && (
+                        <div className="space-y-3">
+                             {blogs.map(b => (
+                                <div key={b.id} className="flex items-center gap-4 p-3 border rounded-xl hover:bg-gray-50">
+                                    <img src={b.imageUrl} className="w-12 h-12 rounded-lg object-cover" />
+                                    <div className="flex-1">
+                                        <h4 className="font-bold">{b.title}</h4>
+                                        <p className="text-xs text-gray-500">{b.date} • {b.category}</p>
+                                    </div>
+                                    <button onClick={() => handleDelete(b.id, 'blog')} className="text-red-400 hover:text-red-600"><Trash2 size={18}/></button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {activeTab === 'messages' && (
+                        <div className="space-y-4">
+                            {messages.length === 0 && <p className="text-center text-gray-400 mt-10">No messages yet.</p>}
+                            {messages.map((m: any) => (
+                                <div key={m.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <div className="flex justify-between mb-2">
+                                        <span className="font-bold text-brand-600">{m.sender}</span>
+                                        <span className="text-xs text-gray-400">{new Date(m.createdAt).toLocaleString()}</span>
+                                    </div>
+                                    <p className="text-gray-800">{m.text}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
         </div>
       </div>
     </div>

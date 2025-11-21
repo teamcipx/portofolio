@@ -1,10 +1,20 @@
 
-import React from 'react';
-import { ArrowRight, Download, Star, PlayCircle, Palette, Layers, MousePointer2, Zap, CheckCircle2, PenTool, Monitor, Cpu, Code2, Layout, Figma, Briefcase, GraduationCap, BookOpen, Calendar, Verified } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Briefcase, GraduationCap, BookOpen, Calendar, Verified, Figma, Code2, Layout, Cpu } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { CV_URL, PROJECTS, TESTIMONIALS, EXPERIENCE, EDUCATION, BLOGS, PROFILE_PIC } from '../constants';
+import { CV_URL, EXPERIENCE, EDUCATION, PROFILE_PIC } from '../constants';
+import { getProjects, getBlogs } from '../services/dataService';
+import { Project, BlogPost } from '../types';
 
 const Home: React.FC = () => {
+  const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
+  const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
+
+  useEffect(() => {
+    getProjects().then(data => setFeaturedProjects(data.slice(0, 3)));
+    getBlogs().then(data => setRecentBlogs(data.slice(0, 3)));
+  }, []);
+
   return (
     <div className="animate-in fade-in duration-500 overflow-hidden">
       {/* Hero Section */}
@@ -115,7 +125,6 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-8">Powering world-class products with</p>
            <div className="flex flex-wrap justify-center gap-8 md:gap-16 grayscale hover:grayscale-0 transition-all duration-500">
-              {/* Icons with Hover Effects */}
               <div className="group flex flex-col items-center gap-3">
                 <div className="p-4 bg-gray-50 rounded-2xl group-hover:bg-[#F24E1E]/10 group-hover:scale-110 transition-all duration-300">
                   <Figma size={32} className="text-gray-400 group-hover:text-[#F24E1E] transition-colors"/>
@@ -158,7 +167,6 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Service Card 1 */}
             <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-2xl transition-all hover:-translate-y-2 duration-300 group">
               <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Palette size={32} />
@@ -172,7 +180,6 @@ const Home: React.FC = () => {
               </ul>
             </div>
 
-            {/* Service Card 2 (Highlighted) */}
             <div className="bg-gradient-to-b from-brand-50 to-white rounded-3xl p-8 border-2 border-brand-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 duration-300 group relative">
               <div className="absolute top-6 right-6 bg-brand-100 text-brand-700 text-[10px] font-bold px-3 py-1 rounded-full tracking-wide">POPULAR</div>
               <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center text-brand-600 mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -187,7 +194,6 @@ const Home: React.FC = () => {
               </ul>
             </div>
 
-            {/* Service Card 3 */}
             <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-2xl transition-all hover:-translate-y-2 duration-300 group">
               <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform duration-300">
                 <PenTool size={32} />
@@ -199,85 +205,6 @@ const Home: React.FC = () => {
                 <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div> Character Design</li>
                 <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div> Lottie Animations</li>
               </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Experience & Education Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            
-            {/* Experience */}
-            <div>
-              <div className="flex items-center gap-4 mb-10">
-                <div className="p-3 bg-gray-900 text-white rounded-xl shadow-lg">
-                   <Briefcase size={24} />
-                </div>
-                <div>
-                   <h3 className="text-3xl font-bold text-gray-900">Experience</h3>
-                   <p className="text-gray-500 text-sm">My professional journey</p>
-                </div>
-              </div>
-              
-              <div className="space-y-10 relative before:absolute before:left-9 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-100 before:border-l before:border-dashed before:border-gray-300">
-                {EXPERIENCE.map((exp) => (
-                  <div key={exp.id} className="relative pl-24 group">
-                    {/* Timeline Dot */}
-                    <div className="absolute left-[30px] top-0 w-3 h-3 bg-white border-2 border-gray-400 rounded-full z-10 group-hover:border-brand-500 group-hover:scale-125 transition-all"></div>
-                    
-                    <div className="group-hover:-translate-y-1 transition-transform duration-300">
-                      <span className="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full mb-2 group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors">
-                        {exp.period}
-                      </span>
-                      <h4 className="text-xl font-bold text-gray-900">{exp.role}</h4>
-                      <p className="text-brand-600 font-bold text-sm mb-3">{exp.company}</p>
-                      <p className="text-gray-600 text-sm leading-relaxed border-l-2 border-gray-100 pl-4">{exp.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Education */}
-            <div>
-              <div className="flex items-center gap-4 mb-10">
-                <div className="p-3 bg-gray-900 text-white rounded-xl shadow-lg">
-                   <GraduationCap size={24} />
-                </div>
-                <div>
-                   <h3 className="text-3xl font-bold text-gray-900">Education</h3>
-                   <p className="text-gray-500 text-sm">Academic background</p>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                {EDUCATION.map((edu) => (
-                  <div key={edu.id} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 group">
-                    <div className="flex justify-between items-start mb-4">
-                      <h4 className="text-xl font-bold text-gray-900 group-hover:text-brand-600 transition-colors">{edu.degree}</h4>
-                      <span className="text-xs font-bold text-white bg-gray-900 px-3 py-1 rounded-full">{edu.period}</span>
-                    </div>
-                    <p className="text-gray-500 font-medium text-sm mb-4 flex items-center gap-2">
-                      <BookOpen size={14}/> {edu.institution}
-                    </p>
-                    <p className="text-gray-600 text-sm">{edu.description}</p>
-                  </div>
-                ))}
-
-                {/* Skills Box */}
-                <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-3xl text-white shadow-xl">
-                   <h3 className="text-xl font-bold mb-6 flex items-center gap-2"><Cpu size={20}/> Technical Arsenal</h3>
-                   <div className="flex flex-wrap gap-2">
-                      {['Figma', 'Adobe XD', 'Photoshop', 'Illustrator', 'React.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'Node.js', 'Git'].map((skill) => (
-                        <span key={skill} className="px-4 py-2 bg-white/10 border border-white/10 rounded-lg text-sm font-medium hover:bg-white hover:text-gray-900 transition cursor-default">
-                          {skill}
-                        </span>
-                      ))}
-                   </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -297,7 +224,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {PROJECTS.slice(0, 3).map((project) => (
+            {featuredProjects.map((project) => (
               <div key={project.id} className="group relative cursor-pointer">
                 <div className="relative overflow-hidden rounded-2xl shadow-md bg-gray-200 mb-5 aspect-[4/3]">
                   <img 
@@ -328,7 +255,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {BLOGS.map((blog) => (
+            {recentBlogs.map((blog) => (
               <article key={blog.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 flex flex-col">
                 <div className="relative h-56 overflow-hidden">
                   <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700"/>
@@ -359,7 +286,6 @@ const Home: React.FC = () => {
       {/* CTA Section */}
       <section className="py-24 px-4">
         <div className="max-w-6xl mx-auto bg-gray-900 rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden shadow-2xl">
-          {/* Decor */}
           <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-brand-600/20 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse-slow"></div>
           <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-accent-600/20 rounded-full -ml-32 -mb-32 blur-3xl animate-pulse-slow" style={{animationDelay: '1s'}}></div>
           
