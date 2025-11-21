@@ -17,8 +17,6 @@ export const sendMessageToGemini = async (message: string): Promise<string> => {
   }
 
   try {
-    const model = ai.models.generateContent;
-    
     // Construct a system-like context in the prompt since we aren't using the systemInstruction config 
     // heavily for the simple call, or we can use the config object.
     // We will inject knowledge about Siam's portfolio.
