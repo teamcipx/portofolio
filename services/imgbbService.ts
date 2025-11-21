@@ -3,8 +3,7 @@
 // Get your API Key here: https://api.imgbb.com/
 
 // NOTE: For a production app, use an Environment Variable (process.env.REACT_APP_IMGBB_KEY)
-// This is a public demo key, please replace it with your own from api.imgbb.com
-const IMGBB_API_KEY = '06c58070517e85833b7443573f42c52c'; 
+const IMGBB_API_KEY = 'ec53d0942b9aefcb5a49770be5dfad14'; 
 
 export const uploadImageToImgBB = async (file: File): Promise<string | null> => {
   const formData = new FormData();

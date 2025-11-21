@@ -1,11 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User } from 'lucide-react';
+import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply } from 'lucide-react';
 import { uploadImageToImgBB } from '../services/imgbbService';
 import { addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, getProducts, deleteProduct, getBlogs, deleteBlog } from '../services/dataService';
 import { Project, Product, BlogPost } from '../types';
+
+const { Navigate } = ReactRouterDOM;
 
 const Admin: React.FC = () => {
   const { user, isAdmin } = useAuth();
@@ -120,7 +121,7 @@ const Admin: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
             <p className="text-gray-500">Content Management System</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-2">
               {[
                   { id: 'projects', icon: Briefcase, label: 'Projects' },
                   { id: 'products', icon: ShoppingBag, label: 'Shop' },
@@ -130,7 +131,7 @@ const Admin: React.FC = () => {
                   <button 
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === tab.id ? 'bg-brand-600 text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gray-100'}`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-brand-600 text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gray-100'}`}
                   >
                       <tab.icon size={18} /> <span className="hidden md:inline">{tab.label}</span>
                   </button>
@@ -244,7 +245,7 @@ const Admin: React.FC = () => {
                         <div className="space-y-4">
                             {messages.length === 0 && <p className="text-center text-gray-400 mt-10">No messages yet.</p>}
                             {messages.map((m: any) => (
-                                <div key={m.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200 flex gap-4">
+                                <div key={m.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200 flex flex-col sm:flex-row gap-4">
                                     <div className="flex-shrink-0">
                                         {m.photoUrl ? (
                                             <img src={m.photoUrl} alt={m.sender} className="w-10 h-10 rounded-full bg-gray-200 object-cover"/>
@@ -255,14 +256,26 @@ const Admin: React.FC = () => {
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <div className="flex justify-between mb-1">
+                                        <div className="flex justify-between items-start mb-1">
                                             <div className="flex flex-col">
                                                 <span className="font-bold text-gray-900">{m.sender}</span>
                                                 {m.email && <a href={`mailto:${m.email}`} className="text-xs text-brand-500 hover:underline">{m.email}</a>}
                                             </div>
-                                            <span className="text-xs text-gray-400">{new Date(m.createdAt).toLocaleString()}</span>
+                                            <span className="text-xs text-gray-400 whitespace-nowrap ml-2">{new Date(m.createdAt).toLocaleString()}</span>
                                         </div>
                                         <p className="text-gray-700 mt-2 text-sm leading-relaxed bg-white p-3 rounded-lg border border-gray-100">{m.text}</p>
+                                        
+                                        {/* Reply Button */}
+                                        {m.email && (
+                                          <div className="mt-3 flex justify-end">
+                                            <a 
+                                              href={`mailto:${m.email}?subject=Re: Portfolio Inquiry&body=Hi ${m.sender},%0D%0A%0D%0AThank you for reaching out via my portfolio chat.%0D%0A%0D%0ARegarding your message: "${m.text.substring(0, 50)}..."%0D%0A%0D%0A`}
+                                              className="flex items-center gap-2 text-sm font-medium bg-brand-600 text-white px-4 py-2 rounded-full hover:bg-brand-700 transition-colors"
+                                            >
+                                              <Reply size={16} /> Reply via Email
+                                            </a>
+                                          </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}

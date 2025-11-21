@@ -4,6 +4,7 @@ import { ShoppingBag, Star, BookOpen, Image as ImageIcon, PackageOpen } from 'lu
 import { getProducts } from '../services/dataService';
 import { Product } from '../types';
 import { useCart } from '../contexts/CartContext';
+import SeoHead from '../components/SeoHead';
 
 const Shop: React.FC = () => {
   const { addToCart } = useCart();
@@ -19,6 +20,10 @@ const Shop: React.FC = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8 pt-24">
+      <SeoHead 
+        title="Shop | Siam Hasan" 
+        description="Buy high-quality design assets, icons, and premium courses directly from Siam Hasan."
+      />
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Design Shop</h1>

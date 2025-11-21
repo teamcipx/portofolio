@@ -1,10 +1,12 @@
-
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Calendar, Verified, Figma, Code2, Layout, BookOpen } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { CV_URL, PROFILE_PIC } from '../constants';
 import { getProjects, getBlogs } from '../services/dataService';
 import { Project, BlogPost } from '../types';
+import SeoHead from '../components/SeoHead';
+
+const { Link } = ReactRouterDOM;
 
 const Home: React.FC = () => {
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
@@ -24,6 +26,12 @@ const Home: React.FC = () => {
 
   return (
     <div className="animate-in fade-in duration-500 overflow-hidden">
+      <SeoHead 
+        title="Siam Hasan | Senior Product Designer & Developer"
+        description="Portfolio of Siam Hasan - Specializing in Brand Identity, UI/UX Design, and Frontend Development. Based in Dhaka."
+        image={PROFILE_PIC}
+      />
+
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-brand-50/50 via-white to-white min-h-[90vh] flex items-center bg-dot-pattern">
         {/* Animated Background Shapes */}

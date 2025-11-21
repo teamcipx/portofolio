@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { getProjects } from '../services/dataService';
 import { Project } from '../types';
 import { Image as ImageIcon } from 'lucide-react';
+import SeoHead from '../components/SeoHead';
 
 const Portfolio: React.FC = () => {
   const [filter, setFilter] = useState('All');
@@ -24,6 +25,10 @@ const Portfolio: React.FC = () => {
 
   return (
     <div className="bg-white min-h-screen py-12 px-4 sm:px-6 lg:px-8 pt-24">
+      <SeoHead 
+        title="Portfolio | Siam Hasan" 
+        description="Browse my latest design projects, branding case studies, and web development work."
+      />
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">My Portfolio</h1>

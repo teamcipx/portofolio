@@ -1,10 +1,11 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User as UserIcon, Lock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { sendMessageToGemini } from '../services/geminiService';
 import { sendMessageToAdmin } from '../services/dataService';
 import { useAuth } from '../contexts/AuthContext';
+
+const { Link } = ReactRouterDOM;
 
 const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

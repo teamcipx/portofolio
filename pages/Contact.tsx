@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
 import { Mail, Globe, MapPin, Send, Clock, ArrowRight } from 'lucide-react';
+import SeoHead from '../components/SeoHead';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -16,6 +18,10 @@ const Contact: React.FC = () => {
 
   return (
     <div className="bg-white min-h-screen py-16 px-4 sm:px-6 lg:px-8">
+      <SeoHead 
+        title="Contact Siam Hasan | Hire a Designer" 
+        description="Get in touch with Siam Hasan for your next design project. Available for freelance and contract work."
+      />
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Let's Work Together</h1>

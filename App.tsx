@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ChatWidget from './components/ChatWidget';
@@ -11,6 +11,8 @@ import Admin from './pages/Admin';
 import Login from './pages/Login';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+
+const { HashRouter: Router, Routes, Route } = ReactRouterDOM;
 
 const App: React.FC = () => {
   return (

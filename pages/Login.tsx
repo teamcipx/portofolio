@@ -1,9 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, ArrowLeft, Mail, Loader2, UserPlus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import SeoHead from '../components/SeoHead';
+
+const { useNavigate, Link } = ReactRouterDOM;
 
 const Login: React.FC = () => {
   const { loginWithGoogle, loginWithEmail, registerWithEmail, user, isAdmin } = useAuth();
@@ -48,6 +49,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <SeoHead title="Login | Siam Hasan" description="Login to access your account or admin dashboard." />
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Link to="/" className="flex justify-center mb-6 text-gray-500 hover:text-brand-600 transition">
            <ArrowLeft className="mr-2" /> Back to Home
