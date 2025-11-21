@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save, CreditCard, CheckCircle, XCircle, Star, PieChart, TrendingUp } from 'lucide-react';
+import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save, CreditCard, CheckCircle, XCircle, Star, PieChart, TrendingUp, Menu } from 'lucide-react';
 import { uploadImageToImgBB } from '../services/imgbbService';
 import { 
   addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, 
@@ -189,28 +190,31 @@ const Admin: React.FC = () => {
     </div>
   );
 
+  // Menu Items Configuration
+  const menuItems = [
+    { id: 'overview', icon: PieChart, label: 'Overview' },
+    { id: 'orders', icon: CreditCard, label: 'Orders' },
+    { id: 'messages', icon: MessageSquare, label: 'Messages' },
+    { id: 'projects', icon: Briefcase, label: 'Portfolio (Work)' },
+    { id: 'products', icon: ShoppingBag, label: 'Shop Items' },
+    { id: 'blogs', icon: BookOpen, label: 'Blogs' },
+    { id: 'testimonials', icon: Star, label: 'Reviews' },
+    { id: 'settings', icon: Settings, label: 'Settings' },
+  ];
+
   return (
     <div className="bg-gray-50 min-h-screen pt-20 flex">
       
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation (Desktop) */}
       <aside className="w-64 bg-white border-r border-gray-100 hidden lg:flex flex-col fixed h-full z-10 left-0 top-20">
          <div className="p-6">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Menu</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Admin Menu</p>
             <nav className="space-y-1">
-               {[
-                  { id: 'overview', icon: PieChart, label: 'Overview' },
-                  { id: 'orders', icon: CreditCard, label: 'Orders' },
-                  { id: 'messages', icon: MessageSquare, label: 'Messages' },
-                  { id: 'projects', icon: Briefcase, label: 'Portfolio' },
-                  { id: 'products', icon: ShoppingBag, label: 'Shop' },
-                  { id: 'blogs', icon: BookOpen, label: 'Blogs' },
-                  { id: 'testimonials', icon: Star, label: 'Testimonials' },
-                  { id: 'settings', icon: Settings, label: 'Settings' },
-               ].map(tab => (
+               {menuItems.map(tab => (
                   <button 
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${activeTab === tab.id ? 'bg-brand-50 text-brand-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-left ${activeTab === tab.id ? 'bg-brand-50 text-brand-600' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
                       <tab.icon size={20} /> {tab.label}
                   </button>
@@ -222,11 +226,16 @@ const Admin: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 lg:ml-64 p-4 sm:p-8 overflow-y-auto pb-20">
         
-        {/* Mobile Tabs (Visible only on small screens) */}
-        <div className="lg:hidden flex overflow-x-auto pb-4 gap-2 mb-6">
-           {/* Simplified mobile menu for brevity */}
-           {['overview', 'orders', 'messages'].map(t => (
-              <button key={t} onClick={() => setActiveTab(t as any)} className={`px-4 py-2 rounded-lg text-sm capitalize ${activeTab === t ? 'bg-brand-600 text-white' : 'bg-white border'}`}>{t}</button>
+        {/* Mobile Tabs (Scrollable) */}
+        <div className="lg:hidden flex overflow-x-auto pb-4 gap-3 mb-6 no-scrollbar">
+           {menuItems.map(t => (
+              <button 
+                key={t.id} 
+                onClick={() => setActiveTab(t.id as any)} 
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap border transition-colors ${activeTab === t.id ? 'bg-brand-600 text-white border-brand-600' : 'bg-white border-gray-200 text-gray-600'}`}
+              >
+                <t.icon size={16}/> {t.label}
+              </button>
            ))}
         </div>
 
@@ -290,21 +299,25 @@ const Admin: React.FC = () => {
                <div className="lg:col-span-1 border-r border-gray-100 flex flex-col">
                   <div className="p-4 border-b border-gray-100 font-bold text-gray-700">Conversations</div>
                   <div className="overflow-y-auto flex-1">
-                     {uniqueSenders.map((email, idx) => (
-                        <div 
-                           key={idx} 
-                           onClick={() => setSelectedUserEmail(email)}
-                           className={`p-4 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition ${selectedUserEmail === email ? 'bg-brand-50 border-r-4 border-brand-500' : ''}`}
-                        >
-                           <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
-                              {email.charAt(0).toUpperCase()}
-                           </div>
-                           <div className="min-w-0">
-                              <p className="font-bold text-gray-900 text-sm truncate">{email}</p>
-                              <p className="text-xs text-gray-500 truncate">Click to view chat</p>
-                           </div>
-                        </div>
-                     ))}
+                     {uniqueSenders.length === 0 ? (
+                        <p className="p-4 text-gray-400 text-sm">No messages yet.</p>
+                     ) : (
+                        uniqueSenders.map((email, idx) => (
+                            <div 
+                               key={idx} 
+                               onClick={() => setSelectedUserEmail(email)}
+                               className={`p-4 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition ${selectedUserEmail === email ? 'bg-brand-50 border-r-4 border-brand-500' : ''}`}
+                            >
+                               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                                  {email.charAt(0).toUpperCase()}
+                               </div>
+                               <div className="min-w-0">
+                                  <p className="font-bold text-gray-900 text-sm truncate">{email}</p>
+                                  <p className="text-xs text-gray-500 truncate">Click to view chat</p>
+                               </div>
+                            </div>
+                        ))
+                     )}
                   </div>
                </div>
 
@@ -444,7 +457,7 @@ const Admin: React.FC = () => {
            </div>
         )}
 
-        {/* Content Tabs (Projects/Products/Blogs) - Reusing previous logic simplified for brevity */}
+        {/* Content Tabs (Projects/Products/Blogs) */}
         {['projects', 'products', 'blogs'].includes(activeTab) && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
@@ -517,9 +530,9 @@ const Admin: React.FC = () => {
                     <button 
                       onClick={handleUpdateProfilePic}
                       disabled={!uploadedUrl}
-                      className="bg-brand-600 text-white px-8 py-3 rounded-full font-bold hover:bg-brand-700 disabled:opacity-50"
+                      className="bg-brand-600 text-white px-8 py-3 rounded-full font-bold hover:bg-brand-700 disabled:opacity-50 flex items-center gap-2"
                     >
-                      Save Profile Picture
+                      <Save size={18}/> Save Profile Picture
                     </button>
                 </div>
             </div>
