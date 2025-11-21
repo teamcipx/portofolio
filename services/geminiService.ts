@@ -1,11 +1,26 @@
 import { GoogleGenAI } from "@google/genai";
 import { PROJECTS, PRODUCTS } from '../constants';
 
-// Initialize Gemini
-// The API key must be obtained exclusively from the environment variable process.env.API_KEY.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Safely get API Key
+const apiKey = process.env.API_KEY;
+
+// Initialize Gemini only if API key is present to prevent immediate crashes
+let ai: GoogleGenAI | null = null;
+
+if (apiKey) {
+  try {
+    ai = new GoogleGenAI({ apiKey: apiKey });
+  } catch (e) {
+    console.error("Failed to initialize Gemini AI:", e);
+  }
+}
 
 export const sendMessageToGemini = async (message: string): Promise<string> => {
+  if (!ai) {
+    console.warn("Gemini AI not initialized (Missing API_KEY)");
+    return "I'm currently in offline mode (API Key missing). Please try again later or contact Siam directly via the form.";
+  }
+
   try {
     // Construct the system instruction
     const systemInstruction = `
