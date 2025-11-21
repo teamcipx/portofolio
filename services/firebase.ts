@@ -1,24 +1,23 @@
 
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
-// TODO: Replace with your actual Firebase Project Config
-// You can find this in Firebase Console > Project Settings > General > Your Apps
 const firebaseConfig = {
-  apiKey: process.env.VITE_FIREBASE_API_KEY || "YOUR_API_KEY_HERE",
-  authDomain: "siam-hasan-portfolio.firebaseapp.com",
-  projectId: "siam-hasan-portfolio",
-  storageBucket: "siam-hasan-portfolio.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
+  apiKey: "AIzaSyB4R7eXPcmYA2X9Y9fEMYrQaPQbcQaiASs",
+  authDomain: "fir-webux-843ff.firebaseapp.com",
+  projectId: "fir-webux-843ff",
+  storageBucket: "fir-webux-843ff.firebasestorage.app",
+  messagingSenderId: "420612957964",
+  appId: "1:420612957964:web:15257f8cb509d0a64b0b29"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase (check for existing apps to prevent re-initialization)
+const app = !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
 
 // Export services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const auth = firebase.auth();
+export const db = firebase.firestore();
+export const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 export default app;

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { ShoppingBag, Star, BookOpen, Image as ImageIcon } from 'lucide-react';
+import { ShoppingBag, Star, BookOpen, Image as ImageIcon, PackageOpen } from 'lucide-react';
 import { getProducts } from '../services/dataService';
 import { Product } from '../types';
 import { useCart } from '../contexts/CartContext';
@@ -29,7 +29,7 @@ const Shop: React.FC = () => {
 
         {loading ? (
             <div className="flex justify-center py-20"><div className="w-10 h-10 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div></div>
-        ) : (
+        ) : products.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product) => (
                 <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition duration-300 flex flex-col">
@@ -66,6 +66,12 @@ const Shop: React.FC = () => {
                 </div>
                 </div>
             ))}
+            </div>
+        ) : (
+            <div className="text-center py-20">
+                <PackageOpen className="mx-auto h-16 w-16 text-gray-300 mb-4"/>
+                <h3 className="text-xl font-bold text-gray-900">Store Opening Soon</h3>
+                <p className="text-gray-500 mt-2">I am preparing some high-quality assets and courses. Check back later!</p>
             </div>
         )}
       </div>

@@ -37,7 +37,17 @@ export enum UserRole {
 
 export interface User {
   username: string;
+  email: string;
   role: UserRole;
+  photoUrl?: string;
+}
+
+export interface AuthContextType {
+  user: User | null;
+  loginWithGoogle: () => Promise<void>;
+  logout: () => Promise<void>;
+  isAdmin: boolean;
+  loading: boolean;
 }
 
 export interface Experience {

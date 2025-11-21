@@ -1,18 +1,25 @@
 
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Briefcase, GraduationCap, BookOpen, Calendar, Verified, Figma, Code2, Layout, Cpu } from 'lucide-react';
+import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Calendar, Verified, Figma, Code2, Layout, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { CV_URL, EXPERIENCE, EDUCATION, PROFILE_PIC } from '../constants';
+import { CV_URL, PROFILE_PIC } from '../constants';
 import { getProjects, getBlogs } from '../services/dataService';
 import { Project, BlogPost } from '../types';
 
 const Home: React.FC = () => {
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getProjects().then(data => setFeaturedProjects(data.slice(0, 3)));
-    getBlogs().then(data => setRecentBlogs(data.slice(0, 3)));
+    const loadData = async () => {
+      const projects = await getProjects();
+      const blogs = await getBlogs();
+      setFeaturedProjects(projects.slice(0, 3));
+      setRecentBlogs(blogs.slice(0, 3));
+      setLoading(false);
+    };
+    loadData();
   }, []);
 
   return (
@@ -223,26 +230,36 @@ const Home: React.FC = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredProjects.map((project) => (
-              <div key={project.id} className="group relative cursor-pointer">
-                <div className="relative overflow-hidden rounded-2xl shadow-md bg-gray-200 mb-5 aspect-[4/3]">
-                  <img 
-                    src={project.imageUrl} 
-                    alt={project.title} 
-                    className="object-cover w-full h-full group-hover:scale-110 transition duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition duration-300"></div>
-                  <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-300">
-                     <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg">
-                        <p className="text-brand-600 text-xs font-bold uppercase mb-1">{project.category}</p>
-                        <h3 className="text-lg font-bold text-gray-900">{project.title}</h3>
-                     </div>
+          {loading ? (
+            <div className="flex justify-center py-12"><div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div></div>
+          ) : featuredProjects.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredProjects.map((project) => (
+                <div key={project.id} className="group relative cursor-pointer">
+                  <div className="relative overflow-hidden rounded-2xl shadow-md bg-gray-200 mb-5 aspect-[4/3]">
+                    <img 
+                      src={project.imageUrl} 
+                      alt={project.title} 
+                      className="object-cover w-full h-full group-hover:scale-110 transition duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition duration-300"></div>
+                    <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-300">
+                      <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg">
+                          <p className="text-brand-600 text-xs font-bold uppercase mb-1">{project.category}</p>
+                          <h3 className="text-lg font-bold text-gray-900">{project.title}</h3>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+             <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-gray-300">
+                <PenTool className="mx-auto h-12 w-12 text-gray-300 mb-3"/>
+                <h3 className="text-lg font-medium text-gray-900">New Projects Coming Soon</h3>
+                <p className="text-gray-500">I am currently updating my portfolio with recent work.</p>
+             </div>
+          )}
         </div>
       </section>
 
@@ -254,32 +271,42 @@ const Home: React.FC = () => {
              <h2 className="text-4xl font-extrabold text-gray-900 mt-2">Latest Insights</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {recentBlogs.map((blog) => (
-              <article key={blog.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 flex flex-col">
-                <div className="relative h-56 overflow-hidden">
-                  <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700"/>
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-md text-xs font-bold text-gray-900 shadow-sm">
-                    {blog.category}
+          {loading ? (
+            <div className="flex justify-center py-12"><div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div></div>
+          ) : recentBlogs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {recentBlogs.map((blog) => (
+                <article key={blog.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 flex flex-col">
+                  <div className="relative h-56 overflow-hidden">
+                    <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700"/>
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-md text-xs font-bold text-gray-900 shadow-sm">
+                      {blog.category}
+                    </div>
                   </div>
-                </div>
-                <div className="p-8 flex-1 flex flex-col">
-                  <div className="flex items-center gap-3 text-xs text-gray-400 mb-4 font-medium uppercase tracking-wide">
-                    <span className="flex items-center gap-1"><Calendar size={12}/> {blog.date}</span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1"><BookOpen size={12}/> {blog.readTime}</span>
+                  <div className="p-8 flex-1 flex flex-col">
+                    <div className="flex items-center gap-3 text-xs text-gray-400 mb-4 font-medium uppercase tracking-wide">
+                      <span className="flex items-center gap-1"><Calendar size={12}/> {blog.date}</span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1"><BookOpen size={12}/> {blog.readTime}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 leading-snug group-hover:text-brand-600 transition">{blog.title}</h3>
+                    <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">{blog.excerpt}</p>
+                    <div className="mt-auto pt-6 border-t border-gray-50">
+                      <a href="#" className="text-gray-900 font-bold text-sm flex items-center gap-2 group-hover:text-brand-600 transition-colors">
+                        Read Full Article <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform"/>
+                      </a>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 leading-snug group-hover:text-brand-600 transition">{blog.title}</h3>
-                  <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">{blog.excerpt}</p>
-                  <div className="mt-auto pt-6 border-t border-gray-50">
-                     <a href="#" className="text-gray-900 font-bold text-sm flex items-center gap-2 group-hover:text-brand-600 transition-colors">
-                       Read Full Article <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform"/>
-                     </a>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+               <BookOpen className="mx-auto h-12 w-12 text-gray-300 mb-3"/>
+               <h3 className="text-lg font-medium text-gray-900">No Articles Yet</h3>
+               <p className="text-gray-500">Stay tuned for upcoming insights on Design & Tech.</p>
+            </div>
+          )}
         </div>
       </section>
 

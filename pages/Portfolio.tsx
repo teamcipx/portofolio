@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { getProjects } from '../services/dataService';
 import { Project } from '../types';
+import { Image as ImageIcon } from 'lucide-react';
 
 const Portfolio: React.FC = () => {
   const [filter, setFilter] = useState('All');
@@ -51,7 +52,7 @@ const Portfolio: React.FC = () => {
         {/* Grid */}
         {loading ? (
             <div className="flex justify-center py-20"><div className="w-10 h-10 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div></div>
-        ) : (
+        ) : filteredProjects.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => (
                 <div key={project.id} className="group cursor-pointer">
@@ -69,6 +70,12 @@ const Portfolio: React.FC = () => {
                 <p className="text-sm text-gray-500">{project.category}</p>
                 </div>
             ))}
+            </div>
+        ) : (
+            <div className="text-center py-20">
+                <ImageIcon className="mx-auto h-16 w-16 text-gray-200 mb-4"/>
+                <h3 className="text-xl font-bold text-gray-900">No Projects Found</h3>
+                <p className="text-gray-500 mt-2">Upload your first project from the Admin Dashboard.</p>
             </div>
         )}
       </div>

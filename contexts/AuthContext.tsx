@@ -1,34 +1,32 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, UserRole } from '../types';
-import { auth } from '../services/firebase';
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => Promise<void>;
-  isAdmin: boolean;
-  loading: boolean;
-}
+import { User, UserRole, AuthContextType } from '../types';
+import { auth, googleProvider } from '../services/firebase';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// List of emails allowed to access the Admin Panel
+const ADMIN_EMAILS = [
+  'admin@siamhasan.com',
+  'siamhasan@gmail.com', // Add your real Google email here
+  'admin' // Legacy/Demo support
+];
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
       if (firebaseUser) {
-        // In a real app, you'd check a custom claim or a 'users' collection.
-        // For this portfolio, we'll assume a specific email is Admin.
-        // REPLACE THIS EMAIL WITH YOUR OWN ADMIN EMAIL
-        const isAdmin = firebaseUser.email === 'admin@siamhasan.com' || firebaseUser.email === 'admin'; 
+        const email = firebaseUser.email || '';
+        const isAdmin = ADMIN_EMAILS.includes(email);
         
         setUser({
-          username: firebaseUser.email?.split('@')[0] || 'User',
-          role: isAdmin ? UserRole.ADMIN : UserRole.GUEST
+          username: firebaseUser.displayName || email.split('@')[0],
+          email: email,
+          role: isAdmin ? UserRole.ADMIN : UserRole.GUEST,
+          photoUrl: firebaseUser.photoURL || undefined
         });
       } else {
         setUser(null);
@@ -39,33 +37,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const loginWithGoogle = async () => {
     try {
-      // Legacy mock support for demo purposes if Firebase fails or for 'admin'/'admin' shortcut
-      if (email === 'admin' && password === 'admin') {
-          // Note: This mock bypass won't work with Firestore security rules if you enforce auth
-          // But useful for the demo UI
-          setUser({ username: 'Siam Hasan (Demo)', role: UserRole.ADMIN });
-          return true;
-      }
-
-      await signInWithEmailAndPassword(auth, email, password);
-      return true;
+      await auth.signInWithPopup(googleProvider);
     } catch (error) {
-      console.error("Login failed", error);
-      return false;
+      console.error("Google Login failed", error);
+      alert("Failed to sign in with Google.");
     }
   };
 
   const logout = async () => {
-    await signOut(auth);
+    await auth.signOut();
     setUser(null);
   };
 
   const isAdmin = user?.role === UserRole.ADMIN;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAdmin, loading }}>
+    <AuthContext.Provider value={{ user, loginWithGoogle, logout, isAdmin, loading }}>
       {children}
     </AuthContext.Provider>
   );
