@@ -34,8 +34,8 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group z-50">
-            <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-accent-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 group-hover:rotate-12 transition duration-300">S</div>
-            <span className="font-bold text-2xl tracking-tight text-gray-900">Siam<span className="text-brand-500">.</span></span>
+            <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-accent-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 group-hover:rotate-12 transition duration-300">A</div>
+            <span className="font-bold text-2xl tracking-tight text-gray-900">Ali<span className="text-brand-500">.</span></span>
           </Link>
 
           {/* Desktop Menu */}

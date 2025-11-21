@@ -1,6 +1,7 @@
 
 import { db } from './firebase';
 import { Project, Product, BlogPost, Message, Order } from '../types';
+import firebase from 'firebase/compat/app';
 
 // Generic Fetch Function (Strictly Firebase)
 export const fetchData = async <T>(collectionName: string): Promise<T[]> => {
@@ -97,6 +98,23 @@ export const getUserOrders = async (email: string): Promise<Order[]> => {
     console.error("Error fetching orders", error);
     return [];
   }
+};
+
+// ADMIN: Get All Orders
+export const getAllOrders = async (): Promise<Order[]> => {
+  try {
+    const snapshot = await db.collection('orders').get();
+    const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+    return orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  } catch (error) {
+    console.error("Error fetching all orders", error);
+    return [];
+  }
+};
+
+// ADMIN: Update Order Status
+export const updateOrderStatus = (orderId: string, status: 'pending' | 'completed' | 'rejected') => {
+  return db.collection('orders').doc(orderId).update({ status });
 };
 
 // --- Settings / Profile ---

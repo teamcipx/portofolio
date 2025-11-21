@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Calendar, Verified, Video, TrendingUp, Search, Megaphone, Play } from 'lucide-react';
+import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Calendar, Verified, Video, TrendingUp, Search, Megaphone, Play, BookOpen } from 'lucide-react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { CV_URL, PROFILE_PIC as DEFAULT_PROFILE_PIC, CLIENT_LOGOS } from '../constants';
 import { getProjects, getBlogs, getProfileSettings } from '../services/dataService';
@@ -291,6 +291,47 @@ const Home: React.FC = () => {
                 <h3 className="text-lg font-medium text-gray-900">New Projects Coming Soon</h3>
                 <p className="text-gray-500">I am currently updating my portfolio with recent work.</p>
              </div>
+          )}
+        </div>
+      </section>
+
+      {/* Latest Insights / Blog Section */}
+      <section className="py-24 bg-white border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+           <div className="text-center mb-16">
+            <span className="text-brand-500 font-bold tracking-wider uppercase text-sm">Blog</span>
+            <h2 className="text-4xl font-extrabold text-gray-900 mt-2">Latest Insights</h2>
+            <p className="text-xl text-gray-600 mt-4 max-w-2xl mx-auto">Strategies, tips, and trends in Digital Marketing and Video Production.</p>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-12"><div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div></div>
+          ) : recentBlogs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+               {recentBlogs.map(blog => (
+                  <Link to={`/blog/${blog.id}`} key={blog.id} className="group bg-gray-50 rounded-3xl p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                     <div className="rounded-2xl overflow-hidden mb-6 h-48">
+                        <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-500"/>
+                     </div>
+                     <div className="flex items-center gap-3 text-xs font-bold text-brand-600 mb-3 uppercase tracking-wide">
+                        <span>{blog.category}</span>
+                        <span className="text-gray-300">•</span>
+                        <span className="text-gray-400">{blog.readTime}</span>
+                     </div>
+                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-brand-600 transition">{blog.title}</h3>
+                     <p className="text-gray-600 line-clamp-2 mb-6">{blog.excerpt}</p>
+                     <div className="flex items-center text-sm font-bold text-gray-900 group-hover:text-brand-600">
+                        Read Article <ArrowRight size={16} className="ml-2 transition group-hover:translate-x-2"/>
+                     </div>
+                  </Link>
+               ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-gray-50 rounded-3xl">
+               <BookOpen className="mx-auto h-12 w-12 text-gray-300 mb-4"/>
+               <h3 className="text-lg font-bold text-gray-900">Articles Coming Soon</h3>
+               <p className="text-gray-500">Stay tuned for updates on SEO and Video Editing.</p>
+            </div>
           )}
         </div>
       </section>

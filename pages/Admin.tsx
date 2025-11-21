@@ -2,22 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save } from 'lucide-react';
+import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save, CreditCard, CheckCircle, XCircle } from 'lucide-react';
 import { uploadImageToImgBB } from '../services/imgbbService';
-import { addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, getProducts, deleteProduct, getBlogs, deleteBlog, replyToMessage, updateProfileSettings, getProfileSettings } from '../services/dataService';
-import { Project, Product, BlogPost } from '../types';
+import { addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, getProducts, deleteProduct, getBlogs, deleteBlog, replyToMessage, updateProfileSettings, getProfileSettings, getAllOrders, updateOrderStatus } from '../services/dataService';
+import { Project, Product, BlogPost, Order } from '../types';
 
 const { Navigate } = ReactRouterDOM;
 
 const Admin: React.FC = () => {
   const { user, isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'products' | 'blogs' | 'messages' | 'settings'>('projects');
+  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'products' | 'blogs' | 'messages' | 'orders' | 'settings'>('orders');
   
   // Data Lists
   const [projects, setProjects] = useState<Project[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [profilePicUrl, setProfilePicUrl] = useState('');
 
   // Form States
@@ -40,17 +41,19 @@ const Admin: React.FC = () => {
   }, [isAdmin, activeTab]);
 
   const refreshData = async () => {
-      const [p, prod, b, m, profile] = await Promise.all([
+      const [p, prod, b, m, o, profile] = await Promise.all([
         getProjects(), 
         getProducts(), 
         getBlogs(), 
         getMessages(),
+        getAllOrders(),
         getProfileSettings()
       ]);
       setProjects(p);
       setProducts(prod);
       setBlogs(b);
       setMessages(m);
+      setOrders(o);
       if (profile && profile.profilePic) {
         setProfilePicUrl(profile.profilePic);
       }
@@ -125,6 +128,12 @@ const Admin: React.FC = () => {
     alert("Profile Picture Updated!");
   };
 
+  const handleOrderStatus = async (id: string, status: 'completed' | 'rejected') => {
+      if(!confirm(`Mark order as ${status}?`)) return;
+      await updateOrderStatus(id, status);
+      refreshData();
+  };
+
   // Components
   const FileUploader = () => (
     <div className="relative border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors mb-4">
@@ -154,10 +163,11 @@ const Admin: React.FC = () => {
           </div>
           <div className="flex gap-2 overflow-x-auto pb-2">
               {[
+                  { id: 'orders', icon: CreditCard, label: 'Orders' },
+                  { id: 'messages', icon: MessageSquare, label: 'Messages' },
                   { id: 'projects', icon: Briefcase, label: 'Projects' },
                   { id: 'products', icon: ShoppingBag, label: 'Shop' },
                   { id: 'blogs', icon: BookOpen, label: 'Blogs' },
-                  { id: 'messages', icon: MessageSquare, label: 'Messages' },
                   { id: 'settings', icon: Settings, label: 'Settings' },
               ].map(tab => (
                   <button 
@@ -174,8 +184,8 @@ const Admin: React.FC = () => {
         {/* Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* Form Column (Left) */}
-            {activeTab !== 'messages' && activeTab !== 'overview' && activeTab !== 'settings' && (
+            {/* Form Column (Left) - Only for Content Tabs */}
+            {['projects', 'products', 'blogs'].includes(activeTab) && (
                 <div className="lg:col-span-1">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
                         <h2 className="text-xl font-bold mb-6 capitalize">Add New {activeTab.slice(0, -1)}</h2>
@@ -228,10 +238,10 @@ const Admin: React.FC = () => {
             )}
 
             {/* List Column (Right) */}
-            <div className={`${(activeTab === 'messages' || activeTab === 'settings') ? 'col-span-3' : 'lg:col-span-2'}`}>
+            <div className={`${['messages', 'settings', 'orders'].includes(activeTab) ? 'col-span-3' : 'lg:col-span-2'}`}>
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 min-h-[500px]">
                     
-                    {activeTab !== 'settings' && (
+                    {!['settings'].includes(activeTab) && (
                       <h3 className="text-lg font-bold mb-6 border-b pb-4 flex justify-between">
                           <span>Manage {activeTab}</span>
                           <span className="text-sm text-gray-500 font-normal">Live Data from Firebase</span>
@@ -345,6 +355,66 @@ const Admin: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {activeTab === 'orders' && (
+                        <div className="space-y-4 overflow-x-auto">
+                            {orders.length === 0 && <p className="text-center text-gray-400 mt-10">No orders found.</p>}
+                            <table className="w-full text-left border-collapse">
+                              <thead>
+                                <tr className="border-b border-gray-200 text-gray-500 text-xs uppercase">
+                                  <th className="p-3">Order ID</th>
+                                  <th className="p-3">Customer</th>
+                                  <th className="p-3">Amount</th>
+                                  <th className="p-3">Method</th>
+                                  <th className="p-3">TrxID / Sender</th>
+                                  <th className="p-3">Status</th>
+                                  <th className="p-3">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-sm text-gray-700">
+                                {orders.map(order => (
+                                  <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <td className="p-3 font-mono text-xs">{order.id?.substring(0, 8)}...</td>
+                                    <td className="p-3">
+                                      <div className="font-bold">{order.userEmail}</div>
+                                      <div className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</div>
+                                    </td>
+                                    <td className="p-3 font-bold text-brand-600">${order.total}</td>
+                                    <td className="p-3">{order.paymentMethod}</td>
+                                    <td className="p-3">
+                                      {order.trxId ? (
+                                        <div className="text-xs">
+                                          <span className="block font-mono bg-gray-100 px-2 py-1 rounded">{order.trxId}</span>
+                                          <span className="block text-gray-400 mt-1">{order.senderNumber}</span>
+                                        </div>
+                                      ) : <span className="text-gray-400 italic">Auto (Card)</span>}
+                                    </td>
+                                    <td className="p-3">
+                                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-bold uppercase ${
+                                        order.status === 'completed' ? 'bg-green-100 text-green-700' : 
+                                        order.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                                      }`}>
+                                        {order.status}
+                                      </span>
+                                    </td>
+                                    <td className="p-3">
+                                      {order.status === 'pending' && (
+                                        <div className="flex gap-2">
+                                          <button onClick={() => handleOrderStatus(order.id!, 'completed')} className="p-1 text-green-600 hover:bg-green-50 rounded" title="Approve">
+                                            <CheckCircle size={18}/>
+                                          </button>
+                                          <button onClick={() => handleOrderStatus(order.id!, 'rejected')} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Reject">
+                                            <XCircle size={18}/>
+                                          </button>
+                                        </div>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
                         </div>
                     )}
 
