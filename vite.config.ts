@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // Polyfill process.env object to avoid ReferenceError: process is not defined
-      'process.env': JSON.stringify(env)
+      // Polyfill process.env object to avoid ReferenceError: process is not defined in browser
+      'process.env': JSON.stringify(env),
     }
   };
 });
