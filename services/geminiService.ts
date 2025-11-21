@@ -2,26 +2,13 @@ import { GoogleGenAI } from "@google/genai";
 import { PROJECTS, PRODUCTS } from '../constants';
 
 // Initialize Gemini
-// Note: In a real production app, ensure this is behind a backend proxy if possible,
-// but for this client-side demo we use the env var directly as per instructions.
-const apiKey = process.env.API_KEY || '';
-let ai: GoogleGenAI | null = null;
-
-if (apiKey) {
-  ai = new GoogleGenAI({ apiKey });
-}
+// The API key must be obtained exclusively from the environment variable process.env.API_KEY.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const sendMessageToGemini = async (message: string): Promise<string> => {
-  if (!ai) {
-    return "I'm sorry, my brain (API Key) is missing! Please configure the API Key to chat with me.";
-  }
-
   try {
-    // Construct a system-like context in the prompt since we aren't using the systemInstruction config 
-    // heavily for the simple call, or we can use the config object.
-    // We will inject knowledge about Siam's portfolio.
-    
-    const context = `
+    // Construct the system instruction
+    const systemInstruction = `
       You are an AI assistant for Siam Hasan, a professional Graphic Designer.
       Your tone is professional, creative, and friendly.
       
@@ -38,12 +25,10 @@ export const sendMessageToGemini = async (message: string): Promise<string> => {
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: [
-        {
-            role: 'user',
-            parts: [{ text: context + "\n\nUser Question: " + message }]
-        }
-      ]
+      contents: message,
+      config: {
+        systemInstruction: systemInstruction,
+      }
     });
 
     return response.text || "I'm currently designing something else and couldn't process that. Try again?";
