@@ -53,7 +53,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await auth.signInWithEmailAndPassword(email, password);
     } catch (error: any) {
       console.error("Email Login failed", error);
-      alert(`Login failed: ${error.message}`);
+      // Provide more specific error messages
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+        throw new Error("User not found. Please check email or Sign Up first.");
+      } else if (error.code === 'auth/wrong-password') {
+        throw new Error("Incorrect password.");
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  const registerWithEmail = async (email: string, password: string) => {
+    try {
+      await auth.createUserWithEmailAndPassword(email, password);
+    } catch (error: any) {
+      console.error("Registration failed", error);
+      if (error.code === 'auth/email-already-in-use') {
+        throw new Error("This email is already registered. Please Login.");
+      }
       throw error;
     }
   };
@@ -66,7 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAdmin = user?.role === UserRole.ADMIN;
 
   return (
-    <AuthContext.Provider value={{ user, loginWithGoogle, loginWithEmail, logout, isAdmin, loading }}>
+    <AuthContext.Provider value={{ user, loginWithGoogle, loginWithEmail, registerWithEmail, logout, isAdmin, loading }}>
       {children}
     </AuthContext.Provider>
   );
