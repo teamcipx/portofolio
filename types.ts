@@ -90,3 +90,15 @@ export interface Message {
   reply?: string;
   read: boolean;
 }
+
+export interface Order {
+  id?: string;
+  userEmail: string;
+  items: CartItem[];
+  total: number;
+  paymentMethod: 'bKash' | 'Nagad' | 'Rocket' | 'Binance' | 'Card';
+  trxId?: string;
+  senderNumber?: string;
+  status: 'pending' | 'completed' | 'rejected';
+  createdAt: string;
+}

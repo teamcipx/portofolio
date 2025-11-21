@@ -56,9 +56,13 @@ const Navbar: React.FC = () => {
              
              {user ? (
                 <div className="flex items-center space-x-3 bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100">
-                    <div className="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold">
-                      {user.username.charAt(0)}
-                    </div>
+                    <Link to="/profile" className="flex items-center gap-2 hover:text-brand-600 transition">
+                      <div className="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold overflow-hidden">
+                        {user.photoUrl ? <img src={user.photoUrl} className="w-full h-full object-cover"/> : user.username.charAt(0)}
+                      </div>
+                      <span className="text-sm font-bold text-gray-800">{user.username}</span>
+                    </Link>
+                    <div className="h-4 w-px bg-gray-200"></div>
                     <button onClick={logout} className="text-xs font-bold text-red-500 hover:text-red-600 uppercase tracking-wide">Logout</button>
                 </div>
              ) : (
@@ -96,7 +100,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 absolute w-full shadow-xl animate-in slide-in-from-top-5 h-screen">
+        <div className="md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 absolute w-full shadow-xl animate-in slide-in-from-top-5 h-screen z-40">
           <div className="px-6 pt-8 pb-6 space-y-4 flex flex-col">
             <Link to="/" className="text-2xl font-bold text-gray-900 hover:text-brand-500" onClick={() => setIsOpen(false)}>Home</Link>
             <Link to="/portfolio" className="text-2xl font-bold text-gray-900 hover:text-brand-500" onClick={() => setIsOpen(false)}>Portfolio</Link>
@@ -107,7 +111,12 @@ const Navbar: React.FC = () => {
               <Link to="/admin" className="text-lg font-bold text-brand-600" onClick={() => setIsOpen(false)}>Admin Dashboard</Link>
             )}
              {user ? (
-                <button onClick={() => { logout(); setIsOpen(false); }} className="text-left text-lg font-medium text-red-500">Logout</button>
+                <>
+                  <Link to="/profile" className="text-lg font-bold text-gray-800 flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                    <User size={18}/> My Profile
+                  </Link>
+                  <button onClick={() => { logout(); setIsOpen(false); }} className="text-left text-lg font-medium text-red-500">Logout</button>
+                </>
              ) : (
                 <Link to="/login" className="text-lg font-medium text-gray-600" onClick={() => setIsOpen(false)}>Login</Link>
              )}

@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Portfolio from './pages/Portfolio';
 import Shop from './pages/Shop';
 import CartPage from './pages/CartPage';
+import ProfilePage from './pages/ProfilePage';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
@@ -30,6 +31,7 @@ const App: React.FC = () => {
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/cart" element={<CartPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/blog/:id" element={<BlogPostPage />} />
                 <Route path="/admin" element={<Admin />} />

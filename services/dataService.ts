@@ -1,6 +1,6 @@
 
 import { db } from './firebase';
-import { Project, Product, BlogPost, Message } from '../types';
+import { Project, Product, BlogPost, Message, Order } from '../types';
 
 // Generic Fetch Function (Strictly Firebase)
 export const fetchData = async <T>(collectionName: string): Promise<T[]> => {
@@ -59,17 +59,12 @@ export const sendMessageToAdmin = (text: string, sender: string = 'Guest', email
 
 export const getMessages = async () => {
   try {
-    // Admin view: newest first. 
-    // If this fails due to index, you can remove orderBy here too and sort in JS.
-    // However, simple ordering usually works if not combined with complex where clauses.
-    const snapshot = await db.collection('messages').orderBy('createdAt', 'desc').get();
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  } catch (error) {
-    console.error("Error fetching messages", error);
-    // Fallback fetch without order if index is missing
     const snapshot = await db.collection('messages').get();
     const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
     return msgs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  } catch (error) {
+    console.error("Error fetching messages", error);
+    return [];
   }
 };
 
@@ -78,8 +73,6 @@ export const replyToMessage = (messageId: string, reply: string) => {
 };
 
 export const subscribeToUserMessages = (email: string, callback: (messages: Message[]) => void) => {
-  // Removed orderBy('createdAt') to prevent "Missing Index" error on composite queries.
-  // We filter by email here, then sort the results in memory.
   return db.collection('messages')
     .where('email', '==', email)
     .onSnapshot(snapshot => {
@@ -88,6 +81,22 @@ export const subscribeToUserMessages = (email: string, callback: (messages: Mess
       msgs.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       callback(msgs);
     });
+};
+
+// --- Orders ---
+export const createOrder = (order: Order) => {
+  return db.collection('orders').add(order);
+};
+
+export const getUserOrders = async (email: string): Promise<Order[]> => {
+  try {
+    const snapshot = await db.collection('orders').where('userEmail', '==', email).get();
+    const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+    return orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  } catch (error) {
+    console.error("Error fetching orders", error);
+    return [];
+  }
 };
 
 // --- Settings / Profile ---
