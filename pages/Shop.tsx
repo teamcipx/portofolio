@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { ShoppingBag, Star, BookOpen, Image as ImageIcon, PackageOpen, Lock, CreditCard, CheckCircle, X, Loader2, Mail, ArrowDownToLine, ShoppingCart } from 'lucide-react';
 import { getProducts } from '../services/dataService';
@@ -48,11 +47,38 @@ const Shop: React.FC = () => {
     }, 2500);
   };
 
+  // Generate Structured Data for Shop Items
+  const structuredData = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": products.map((product, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Product",
+        "name": product.title,
+        "image": product.imageUrl,
+        "description": product.description,
+        "offers": {
+          "@type": "Offer",
+          "price": product.price,
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": product.rating,
+          "reviewCount": "12" // Mock data or implement review count
+        }
+      }
+    }))
+  });
+
   return (
     <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8 pt-24">
       <SeoHead 
-        title="Shop | Siam Hasan" 
-        description="Buy high-quality design assets, icons, and premium courses directly from Siam Hasan."
+        title="Shop Assets & Courses | Ali Hossn" 
+        description="Buy high-quality video editing courses, design assets, and digital marketing templates directly from Ali Hossn."
+        schema={structuredData}
       />
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">

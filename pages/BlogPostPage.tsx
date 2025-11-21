@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { Calendar, Clock, Facebook, Twitter, Linkedin, Link as LinkIcon, ArrowLeft, Share2 } from 'lucide-react';
@@ -49,13 +48,40 @@ const BlogPostPage: React.FC = () => {
     );
   }
 
+  // JSON-LD Structured Data for Blog Post
+  const structuredData = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "image": [post.imageUrl],
+    "datePublished": post.date, // Assuming date format is compatible or generic string
+    "dateModified": post.date,
+    "author": [{
+      "@type": "Person",
+      "name": "Ali Hossn",
+      "url": "https://alihossn.com"
+    }],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Ali Hossn Digital",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://alihossn.com/logo.png" // Fallback or actual logo URL
+      }
+    },
+    "description": post.excerpt,
+    "articleBody": post.content || post.excerpt
+  });
+
   return (
     <div className="bg-white min-h-screen pt-24 pb-12">
       <SeoHead 
-        title={`${post.title} | Siam Hasan`} 
+        title={`${post.title} | Ali Hossn`} 
         description={post.excerpt} 
         image={post.imageUrl}
         url={window.location.href}
+        type="article"
+        schema={structuredData}
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -110,10 +136,10 @@ const BlogPostPage: React.FC = () => {
 
         {/* Author Box */}
         <div className="mt-16 pt-8 border-t border-gray-100 flex items-center gap-4">
-           <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" className="w-16 h-16 rounded-full object-cover" alt="Siam"/>
+           <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" className="w-16 h-16 rounded-full object-cover" alt="Ali Hossn"/>
            <div>
-              <h4 className="font-bold text-gray-900">Written by Siam Hasan</h4>
-              <p className="text-gray-500 text-sm">Senior Product Designer & Developer</p>
+              <h4 className="font-bold text-gray-900">Written by Ali Hossn</h4>
+              <p className="text-gray-500 text-sm">Digital Marketer & Video Editor</p>
            </div>
         </div>
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { getProjects } from '../services/dataService';
 import { Project } from '../types';
@@ -23,17 +22,39 @@ const Portfolio: React.FC = () => {
     ? projects 
     : projects.filter(p => p.category === filter);
 
+  // Create Structured Data for ItemList (Portfolio)
+  const structuredData = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": filteredProjects.map((project, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "CreativeWork",
+        "name": project.title,
+        "image": project.imageUrl,
+        "description": project.description,
+        "genre": project.category,
+        "creator": {
+          "@type": "Person",
+          "name": "Ali Hossn"
+        }
+      }
+    }))
+  });
+
   return (
     <div className="bg-white min-h-screen py-12 px-4 sm:px-6 lg:px-8 pt-24">
       <SeoHead 
-        title="Portfolio | Siam Hasan" 
-        description="Browse my latest design projects, branding case studies, and web development work."
+        title="Portfolio | Ali Hossn" 
+        description="Browse my latest digital marketing campaigns, video edits, branding case studies, and graphic design work."
+        schema={structuredData}
       />
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">My Portfolio</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            A selection of my best work across branding, illustration, and digital design.
+            A selection of my best work across branding, video production, and digital marketing.
           </p>
         </div>
 
