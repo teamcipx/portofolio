@@ -29,6 +29,18 @@ export const deleteProduct = (id: string) => db.collection('products').doc(id).d
 
 // --- Blogs ---
 export const getBlogs = () => fetchData<BlogPost>('blogs');
+export const getBlogById = async (id: string): Promise<BlogPost | null> => {
+  try {
+    const doc = await db.collection('blogs').doc(id).get();
+    if (doc.exists) {
+      return { id: doc.id, ...doc.data() } as BlogPost;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching blog", error);
+    return null;
+  }
+};
 export const addBlog = (data: Omit<BlogPost, 'id'>) => db.collection('blogs').add(data);
 export const deleteBlog = (id: string) => db.collection('blogs').doc(id).delete();
 

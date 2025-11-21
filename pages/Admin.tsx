@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,7 +26,7 @@ const Admin: React.FC = () => {
   // Generic Forms
   const [projectForm, setProjectForm] = useState({ title: '', category: 'Branding', description: '' });
   const [productForm, setProductForm] = useState({ title: '', type: 'Asset', price: '', description: '' });
-  const [blogForm, setBlogForm] = useState({ title: '', category: 'Design', excerpt: '', readTime: '5 min read' });
+  const [blogForm, setBlogForm] = useState({ title: '', category: 'Design', excerpt: '', content: '', readTime: '5 min read' });
 
   // Load Data
   useEffect(() => {
@@ -81,7 +82,7 @@ const Admin: React.FC = () => {
       if(!uploadedUrl) return alert("Upload image first");
       await addBlog({ ...blogForm, imageUrl: uploadedUrl, date: new Date().toLocaleDateString() } as any);
       setUploadedUrl(null);
-      setBlogForm({ title: '', category: 'Design', excerpt: '', readTime: '5 min' });
+      setBlogForm({ title: '', category: 'Design', excerpt: '', content: '', readTime: '5 min' });
       refreshData();
       alert("Blog Published");
   };
@@ -180,7 +181,14 @@ const Admin: React.FC = () => {
                                 <FileUploader />
                                 <input type="text" placeholder="Article Title" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={blogForm.title} onChange={e => setBlogForm({...blogForm, title: e.target.value})} />
                                 <input type="text" placeholder="Category (e.g. Design)" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={blogForm.category} onChange={e => setBlogForm({...blogForm, category: e.target.value})} />
-                                <textarea placeholder="Excerpt / Content" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={blogForm.excerpt} onChange={e => setBlogForm({...blogForm, excerpt: e.target.value})} />
+                                <textarea placeholder="Short Excerpt (2 lines)" required className="w-full p-3 bg-gray-50 rounded-lg border-none" value={blogForm.excerpt} onChange={e => setBlogForm({...blogForm, excerpt: e.target.value})} />
+                                <textarea 
+                                  placeholder="Full Article Content..." 
+                                  required 
+                                  className="w-full p-3 bg-gray-50 rounded-lg border-none h-40" 
+                                  value={blogForm.content} 
+                                  onChange={e => setBlogForm({...blogForm, content: e.target.value})} 
+                                />
                                 <button type="submit" disabled={!uploadedUrl} className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700 disabled:opacity-50">Publish Post</button>
                             </form>
                         )}

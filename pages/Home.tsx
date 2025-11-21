@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Calendar, Verified, Figma, Code2, Layout, BookOpen } from 'lucide-react';
 import * as ReactRouterDOM from 'react-router-dom';
@@ -27,7 +28,7 @@ const Home: React.FC = () => {
   return (
     <div className="animate-in fade-in duration-500 overflow-hidden">
       <SeoHead 
-        title="Siam Hasan | Senior Product Designer & Developer"
+        title="Siam Hasan | Senior Product Designer & Frontend Developer"
         description="Portfolio of Siam Hasan - Specializing in Brand Identity, UI/UX Design, and Frontend Development. Based in Dhaka."
         image={PROFILE_PIC}
       />
@@ -300,9 +301,9 @@ const Home: React.FC = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-3 leading-snug group-hover:text-brand-600 transition">{blog.title}</h3>
                     <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">{blog.excerpt}</p>
                     <div className="mt-auto pt-6 border-t border-gray-50">
-                      <a href="#" className="text-gray-900 font-bold text-sm flex items-center gap-2 group-hover:text-brand-600 transition-colors">
+                      <Link to={`/blog/${blog.id}`} className="text-gray-900 font-bold text-sm flex items-center gap-2 group-hover:text-brand-600 transition-colors">
                         Read Full Article <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform"/>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </article>

@@ -73,6 +73,7 @@ export interface BlogPost {
   id: string;
   title: string;
   excerpt: string;
+  content?: string; // Full article content
   date: string;
   readTime: string;
   imageUrl: string;
