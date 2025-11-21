@@ -1,8 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User as UserIcon } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User as UserIcon, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { sendMessageToGemini } from '../services/geminiService';
 import { sendMessageToAdmin } from '../services/dataService';
+import { useAuth } from '../contexts/AuthContext';
 
 const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +15,8 @@ const ChatWidget: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  const { user } = useAuth();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -36,11 +40,20 @@ const ChatWidget: React.FC = () => {
         setMessages(prev => [...prev, { sender: 'ai', text: aiResponse }]);
     } else {
         // Live Chat Mode
-        await sendMessageToAdmin(userMessage);
-        // In a full real-time system, we would listen to changes. 
-        // Here we just acknowledge receipt.
+        if (!user) {
+            setMessages(prev => [...prev, { sender: 'admin', text: "Please login to send messages." }]);
+            return;
+        }
+
+        await sendMessageToAdmin(
+            userMessage, 
+            user.username, 
+            user.email, 
+            user.photoUrl
+        );
+        
         setTimeout(() => {
-            setMessages(prev => [...prev, { sender: 'admin', text: "Thanks for your message! Siam will reply to your email shortly." }]);
+            setMessages(prev => [...prev, { sender: 'admin', text: "Thanks! Siam has received your message and will reply to your email." }]);
         }, 1000);
     }
   };
@@ -60,7 +73,7 @@ const ChatWidget: React.FC = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="bg-white rounded-2xl shadow-2xl w-80 sm:w-96 flex flex-col border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-300">
+        <div className="bg-white rounded-2xl shadow-2xl w-80 sm:w-96 flex flex-col border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-300 max-h-[600px]">
           
           {/* Header */}
           <div className="bg-brand-600 p-4 text-white">
@@ -122,22 +135,37 @@ const ChatWidget: React.FC = () => {
           </div>
 
           {/* Input */}
-          <div className="p-3 bg-white border-t border-gray-100 flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder={mode === 'AI' ? "Ask me anything..." : "Leave a message..."}
-              className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-            <button
-              onClick={handleSend}
-              disabled={isLoading || !input.trim()}
-              className="bg-brand-600 text-white p-2 rounded-full hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Send size={18} />
-            </button>
+          <div className="p-3 bg-white border-t border-gray-100">
+            {mode === 'LIVE' && !user ? (
+                <div className="text-center py-4">
+                    <p className="text-sm text-gray-500 mb-3">You must be logged in to send a direct message.</p>
+                    <Link 
+                        to="/login" 
+                        onClick={() => setIsOpen(false)}
+                        className="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-brand-600 transition"
+                    >
+                        <Lock size={14} /> Login to Chat
+                    </Link>
+                </div>
+            ) : (
+                <div className="flex gap-2">
+                    <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    placeholder={mode === 'AI' ? "Ask me anything..." : "Leave a message..."}
+                    className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                    <button
+                    onClick={handleSend}
+                    disabled={isLoading || !input.trim()}
+                    className="bg-brand-600 text-white p-2 rounded-full hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                    <Send size={18} />
+                    </button>
+                </div>
+            )}
           </div>
         </div>
       )}

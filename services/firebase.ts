@@ -18,6 +18,13 @@ const app = !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : fir
 // Export services
 export const auth = firebase.auth();
 export const db = firebase.firestore();
+
+// Fix for "Backend didn't respond within 10 seconds" error.
+// This forces Firestore to use Long Polling instead of WebSockets, which resolves most connectivity issues.
+db.settings({ experimentalForceLongPolling: true });
+
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
+// Ensure account selection prompt appears every time
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 export default app;

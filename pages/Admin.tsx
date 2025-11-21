@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2 } from 'lucide-react';
+import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User } from 'lucide-react';
 import { uploadImageToImgBB } from '../services/imgbbService';
 import { addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, getProducts, deleteProduct, getBlogs, deleteBlog } from '../services/dataService';
 import { Project, Product, BlogPost } from '../types';
@@ -244,12 +244,26 @@ const Admin: React.FC = () => {
                         <div className="space-y-4">
                             {messages.length === 0 && <p className="text-center text-gray-400 mt-10">No messages yet.</p>}
                             {messages.map((m: any) => (
-                                <div key={m.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <div className="flex justify-between mb-2">
-                                        <span className="font-bold text-brand-600">{m.sender}</span>
-                                        <span className="text-xs text-gray-400">{new Date(m.createdAt).toLocaleString()}</span>
+                                <div key={m.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200 flex gap-4">
+                                    <div className="flex-shrink-0">
+                                        {m.photoUrl ? (
+                                            <img src={m.photoUrl} alt={m.sender} className="w-10 h-10 rounded-full bg-gray-200 object-cover"/>
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600">
+                                                <User size={20}/>
+                                            </div>
+                                        )}
                                     </div>
-                                    <p className="text-gray-800">{m.text}</p>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between mb-1">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-gray-900">{m.sender}</span>
+                                                {m.email && <a href={`mailto:${m.email}`} className="text-xs text-brand-500 hover:underline">{m.email}</a>}
+                                            </div>
+                                            <span className="text-xs text-gray-400">{new Date(m.createdAt).toLocaleString()}</span>
+                                        </div>
+                                        <p className="text-gray-700 mt-2 text-sm leading-relaxed bg-white p-3 rounded-lg border border-gray-100">{m.text}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>

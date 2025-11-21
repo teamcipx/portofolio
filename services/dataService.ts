@@ -33,10 +33,12 @@ export const addBlog = (data: Omit<BlogPost, 'id'>) => db.collection('blogs').ad
 export const deleteBlog = (id: string) => db.collection('blogs').doc(id).delete();
 
 // --- Messages (Chat) ---
-export const sendMessageToAdmin = (text: string, sender: string = 'Guest') => {
+export const sendMessageToAdmin = (text: string, sender: string = 'Guest', email?: string, photoUrl?: string) => {
   return db.collection('messages').add({
     text,
     sender,
+    email: email || '',
+    photoUrl: photoUrl || '',
     createdAt: new Date().toISOString(),
     read: false
   });

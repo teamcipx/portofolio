@@ -6,9 +6,10 @@ import { auth, googleProvider } from '../services/firebase';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // List of emails allowed to access the Admin Panel
+// ACTION REQUIRED: Create a user in Firebase Console > Authentication with one of these emails.
 const ADMIN_EMAILS = [
-  'admin@siamhasan.com',
-  'siamhasan@gmail.com', // Add your real Google email here
+  'admin@siamhasan.com', // Primary Admin
+  'siamhasan@gmail.com', // Backup/Personal Google
   'admin' // Legacy/Demo support
 ];
 
@@ -20,7 +21,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
       if (firebaseUser) {
         const email = firebaseUser.email || '';
-        const isAdmin = ADMIN_EMAILS.includes(email);
+        // Case-insensitive check
+        const isAdmin = ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase() === email.toLowerCase());
         
         setUser({
           username: firebaseUser.displayName || email.split('@')[0],
@@ -40,9 +42,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const loginWithGoogle = async () => {
     try {
       await auth.signInWithPopup(googleProvider);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Google Login failed", error);
-      alert("Failed to sign in with Google.");
+      alert(`Failed to sign in with Google: ${error.message}`);
+    }
+  };
+
+  const loginWithEmail = async (email: string, password: string) => {
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+    } catch (error: any) {
+      console.error("Email Login failed", error);
+      alert(`Login failed: ${error.message}`);
+      throw error;
     }
   };
 
@@ -54,7 +66,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAdmin = user?.role === UserRole.ADMIN;
 
   return (
-    <AuthContext.Provider value={{ user, loginWithGoogle, logout, isAdmin, loading }}>
+    <AuthContext.Provider value={{ user, loginWithGoogle, loginWithEmail, logout, isAdmin, loading }}>
       {children}
     </AuthContext.Provider>
   );
