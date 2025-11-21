@@ -2,26 +2,30 @@
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply } from 'lucide-react';
+import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save } from 'lucide-react';
 import { uploadImageToImgBB } from '../services/imgbbService';
-import { addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, getProducts, deleteProduct, getBlogs, deleteBlog } from '../services/dataService';
+import { addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, getProducts, deleteProduct, getBlogs, deleteBlog, replyToMessage, updateProfileSettings, getProfileSettings } from '../services/dataService';
 import { Project, Product, BlogPost } from '../types';
 
 const { Navigate } = ReactRouterDOM;
 
 const Admin: React.FC = () => {
   const { user, isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'products' | 'blogs' | 'messages'>('projects');
+  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'products' | 'blogs' | 'messages' | 'settings'>('projects');
   
   // Data Lists
   const [projects, setProjects] = useState<Project[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [profilePicUrl, setProfilePicUrl] = useState('');
 
   // Form States
   const [uploading, setUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  
+  // Reply State
+  const [replyText, setReplyText] = useState<{[key: string]: string}>({});
   
   // Generic Forms
   const [projectForm, setProjectForm] = useState({ title: '', category: 'Branding', description: '' });
@@ -36,11 +40,20 @@ const Admin: React.FC = () => {
   }, [isAdmin, activeTab]);
 
   const refreshData = async () => {
-      const [p, prod, b, m] = await Promise.all([getProjects(), getProducts(), getBlogs(), getMessages()]);
+      const [p, prod, b, m, profile] = await Promise.all([
+        getProjects(), 
+        getProducts(), 
+        getBlogs(), 
+        getMessages(),
+        getProfileSettings()
+      ]);
       setProjects(p);
       setProducts(prod);
       setBlogs(b);
       setMessages(m);
+      if (profile && profile.profilePic) {
+        setProfilePicUrl(profile.profilePic);
+      }
   };
 
   if (!user || !isAdmin) {
@@ -95,6 +108,23 @@ const Admin: React.FC = () => {
       refreshData();
   };
 
+  const handleReply = async (messageId: string) => {
+    const text = replyText[messageId];
+    if (!text) return;
+    await replyToMessage(messageId, text);
+    refreshData();
+    setReplyText(prev => ({ ...prev, [messageId]: '' }));
+    alert("Reply sent!");
+  };
+
+  const handleUpdateProfilePic = async () => {
+    if (!uploadedUrl) return alert("Please upload an image first");
+    await updateProfileSettings({ profilePic: uploadedUrl });
+    setProfilePicUrl(uploadedUrl);
+    setUploadedUrl(null);
+    alert("Profile Picture Updated!");
+  };
+
   // Components
   const FileUploader = () => (
     <div className="relative border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors mb-4">
@@ -107,7 +137,7 @@ const Admin: React.FC = () => {
             <>
                 <input type="file" accept="image/*" onChange={handleFileChange} disabled={uploading} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 {uploading ? <Loader2 className="animate-spin text-brand-500"/> : <Upload className="text-gray-400 mb-2"/>}
-                <span className="text-xs text-gray-500">Upload Cover Image</span>
+                <span className="text-xs text-gray-500">Upload Image</span>
             </>
         )}
     </div>
@@ -128,6 +158,7 @@ const Admin: React.FC = () => {
                   { id: 'products', icon: ShoppingBag, label: 'Shop' },
                   { id: 'blogs', icon: BookOpen, label: 'Blogs' },
                   { id: 'messages', icon: MessageSquare, label: 'Messages' },
+                  { id: 'settings', icon: Settings, label: 'Settings' },
               ].map(tab => (
                   <button 
                     key={tab.id}
@@ -143,8 +174,8 @@ const Admin: React.FC = () => {
         {/* Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* Form Column (Left) - Only for Content tabs */}
-            {activeTab !== 'messages' && activeTab !== 'overview' && (
+            {/* Form Column (Left) */}
+            {activeTab !== 'messages' && activeTab !== 'overview' && activeTab !== 'settings' && (
                 <div className="lg:col-span-1">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
                         <h2 className="text-xl font-bold mb-6 capitalize">Add New {activeTab.slice(0, -1)}</h2>
@@ -197,12 +228,15 @@ const Admin: React.FC = () => {
             )}
 
             {/* List Column (Right) */}
-            <div className={`${activeTab === 'messages' ? 'col-span-3' : 'lg:col-span-2'}`}>
+            <div className={`${(activeTab === 'messages' || activeTab === 'settings') ? 'col-span-3' : 'lg:col-span-2'}`}>
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 min-h-[500px]">
-                    <h3 className="text-lg font-bold mb-6 border-b pb-4 flex justify-between">
-                        <span>Existing {activeTab}</span>
-                        <span className="text-sm text-gray-500 font-normal">Live Data from Firebase</span>
-                    </h3>
+                    
+                    {activeTab !== 'settings' && (
+                      <h3 className="text-lg font-bold mb-6 border-b pb-4 flex justify-between">
+                          <span>Manage {activeTab}</span>
+                          <span className="text-sm text-gray-500 font-normal">Live Data from Firebase</span>
+                      </h3>
+                    )}
 
                     {activeTab === 'projects' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -263,7 +297,7 @@ const Admin: React.FC = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex-1">
+                                    <div className="flex-1 w-full">
                                         <div className="flex justify-between items-start mb-1">
                                             <div className="flex flex-col">
                                                 <span className="font-bold text-gray-900">{m.sender}</span>
@@ -273,20 +307,74 @@ const Admin: React.FC = () => {
                                         </div>
                                         <p className="text-gray-700 mt-2 text-sm leading-relaxed bg-white p-3 rounded-lg border border-gray-100">{m.text}</p>
                                         
-                                        {/* Reply Button */}
+                                        {/* Admin Reply Display / Input */}
+                                        {m.reply ? (
+                                          <div className="mt-3 ml-4 pl-4 border-l-2 border-brand-300">
+                                            <p className="text-xs text-brand-600 font-bold">You replied:</p>
+                                            <p className="text-sm text-gray-600">{m.reply}</p>
+                                          </div>
+                                        ) : (
+                                          <div className="mt-3 flex gap-2">
+                                             <input 
+                                                type="text" 
+                                                placeholder="Type a direct reply to chat..." 
+                                                className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:ring-2 ring-brand-500 outline-none"
+                                                value={replyText[m.id] || ''}
+                                                onChange={(e) => setReplyText({...replyText, [m.id]: e.target.value})}
+                                             />
+                                             <button 
+                                                onClick={() => handleReply(m.id)}
+                                                className="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-brand-600"
+                                             >
+                                                Send
+                                             </button>
+                                          </div>
+                                        )}
+
+                                        {/* Email Reply Button */}
                                         {m.email && (
-                                          <div className="mt-3 flex justify-end">
+                                          <div className="mt-2 flex justify-end">
                                             <a 
                                               href={`mailto:${m.email}?subject=Re: Portfolio Inquiry&body=Hi ${m.sender},%0D%0A%0D%0AThank you for reaching out via my portfolio chat.%0D%0A%0D%0ARegarding your message: "${m.text.substring(0, 50)}..."%0D%0A%0D%0A`}
-                                              className="flex items-center gap-2 text-sm font-medium bg-brand-600 text-white px-4 py-2 rounded-full hover:bg-brand-700 transition-colors"
+                                              className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-brand-600 transition-colors"
                                             >
-                                              <Reply size={16} /> Reply via Email
+                                              <Reply size={14} /> Reply via Email Client
                                             </a>
                                           </div>
                                         )}
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {activeTab === 'settings' && (
+                        <div className="max-w-xl mx-auto text-center space-y-6">
+                            <h3 className="text-2xl font-bold text-gray-900">Admin Settings</h3>
+                            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                                <h4 className="font-bold text-gray-700 mb-4">Update Profile Picture</h4>
+                                <p className="text-sm text-gray-500 mb-6">This image appears on the Home Page hero section.</p>
+                                
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-brand-100">
+                                      {uploadedUrl ? (
+                                         <img src={uploadedUrl} className="w-full h-full object-cover" />
+                                      ) : (
+                                         <img src={profilePicUrl || "https://via.placeholder.com/150"} className="w-full h-full object-cover" />
+                                      )}
+                                    </div>
+                                    
+                                    <FileUploader />
+                                    
+                                    <button 
+                                      onClick={handleUpdateProfilePic}
+                                      disabled={!uploadedUrl}
+                                      className="flex items-center gap-2 bg-brand-600 text-white px-6 py-3 rounded-full font-bold hover:bg-brand-700 disabled:opacity-50 transition"
+                                    >
+                                      <Save size={18} /> Save New Profile Pic
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

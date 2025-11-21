@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Calendar, Verified, Figma, Code2, Layout, BookOpen } from 'lucide-react';
 import * as ReactRouterDOM from 'react-router-dom';
-import { CV_URL, PROFILE_PIC } from '../constants';
-import { getProjects, getBlogs } from '../services/dataService';
+import { CV_URL, PROFILE_PIC as DEFAULT_PROFILE_PIC } from '../constants';
+import { getProjects, getBlogs, getProfileSettings } from '../services/dataService';
 import { Project, BlogPost } from '../types';
 import SeoHead from '../components/SeoHead';
 
@@ -13,13 +13,21 @@ const Home: React.FC = () => {
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profilePic, setProfilePic] = useState(DEFAULT_PROFILE_PIC);
 
   useEffect(() => {
     const loadData = async () => {
       const projects = await getProjects();
       const blogs = await getBlogs();
+      const settings = await getProfileSettings();
+      
       setFeaturedProjects(projects.slice(0, 3));
       setRecentBlogs(blogs.slice(0, 3));
+      
+      if (settings && settings.profilePic) {
+        setProfilePic(settings.profilePic);
+      }
+      
       setLoading(false);
     };
     loadData();
@@ -30,7 +38,7 @@ const Home: React.FC = () => {
       <SeoHead 
         title="Siam Hasan | Senior Product Designer & Frontend Developer"
         description="Portfolio of Siam Hasan - Specializing in Brand Identity, UI/UX Design, and Frontend Development. Based in Dhaka."
-        image={PROFILE_PIC}
+        image={profilePic}
       />
 
       {/* Hero Section */}
@@ -104,7 +112,7 @@ const Home: React.FC = () => {
                   {/* Profile Picture Container */}
                   <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white shadow-2xl bg-gray-100">
                      <img 
-                        src={PROFILE_PIC} 
+                        src={profilePic} 
                         alt="Siam Hasan - Product Designer" 
                         className="w-full h-full object-cover scale-110 hover:scale-100 transition-transform duration-700"
                      />

@@ -1,13 +1,15 @@
 
 import React, { useEffect, useState } from 'react';
-import { ShoppingBag, Star, BookOpen, Image as ImageIcon, PackageOpen, Lock, CreditCard, CheckCircle, X, Loader2, Mail, ArrowDownToLine } from 'lucide-react';
+import { ShoppingBag, Star, BookOpen, Image as ImageIcon, PackageOpen, Lock, CreditCard, CheckCircle, X, Loader2, Mail, ArrowDownToLine, ShoppingCart } from 'lucide-react';
 import { getProducts } from '../services/dataService';
 import { Product } from '../types';
 import SeoHead from '../components/SeoHead';
+import { useCart } from '../contexts/CartContext';
 
 const Shop: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
   
   // Payment Modal State
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -29,6 +31,11 @@ const Shop: React.FC = () => {
     setSelectedProduct(product);
     setPaymentStep('form');
     setShowModal(true);
+  };
+
+  const handleAddToCart = (product: Product) => {
+      addToCart(product);
+      alert(`${product.title} added to cart!`);
   };
 
   const handlePayment = (e: React.FormEvent) => {
@@ -81,13 +88,22 @@ const Shop: React.FC = () => {
                         <span className="text-gray-400 font-medium ml-1">{product.rating}</span>
                         </div>
                     </div>
-                    <button 
-                        onClick={() => openPaymentModal(product)}
-                        className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-brand-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
-                    >
-                        <ShoppingBag size={18} />
-                        Buy Now
-                    </button>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => handleAddToCart(product)}
+                            className="p-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 transition"
+                            title="Add to Cart"
+                        >
+                            <ShoppingCart size={18} />
+                        </button>
+                        <button 
+                            onClick={() => openPaymentModal(product)}
+                            className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-brand-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+                        >
+                            <ShoppingBag size={18} />
+                            Buy
+                        </button>
+                    </div>
                     </div>
                 </div>
                 </div>

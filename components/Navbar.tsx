@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { ShoppingCart, Menu, X, User } from 'lucide-react';
@@ -66,7 +67,7 @@ const Navbar: React.FC = () => {
                 </Link>
              )}
 
-            <Link to="/shop" className="relative p-2.5 hover:bg-brand-50 rounded-full transition text-gray-700 hover:text-brand-600">
+            <Link to="/cart" className="relative p-2.5 hover:bg-brand-50 rounded-full transition text-gray-700 hover:text-brand-600">
               <ShoppingCart size={20} />
               {items.length > 0 && (
                 <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-brand-500 rounded-full shadow-md transform translate-x-1 -translate-y-1">
@@ -78,7 +79,7 @@ const Navbar: React.FC = () => {
 
           {/* Mobile Button */}
           <div className="md:hidden flex items-center gap-4">
-             <Link to="/shop" className="relative text-gray-800">
+             <Link to="/cart" className="relative text-gray-800">
                 <ShoppingCart size={24} />
                 {items.length > 0 && (
                   <span className="absolute -top-2 -right-2 w-4 h-4 bg-brand-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">

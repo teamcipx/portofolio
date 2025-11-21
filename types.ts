@@ -79,3 +79,14 @@ export interface BlogPost {
   imageUrl: string;
   category: string;
 }
+
+export interface Message {
+  id: string;
+  text: string;
+  sender: string;
+  email: string;
+  photoUrl?: string;
+  createdAt: string;
+  reply?: string;
+  read: boolean;
+}

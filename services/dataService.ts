@@ -1,6 +1,6 @@
 
 import { db } from './firebase';
-import { Project, Product, BlogPost } from '../types';
+import { Project, Product, BlogPost, Message } from '../types';
 
 // Generic Fetch Function (Strictly Firebase)
 export const fetchData = async <T>(collectionName: string): Promise<T[]> => {
@@ -52,16 +52,55 @@ export const sendMessageToAdmin = (text: string, sender: string = 'Guest', email
     email: email || '',
     photoUrl: photoUrl || '',
     createdAt: new Date().toISOString(),
-    read: false
+    read: false,
+    reply: ''
   });
 };
 
 export const getMessages = async () => {
   try {
+    // Admin view: newest first. 
+    // If this fails due to index, you can remove orderBy here too and sort in JS.
+    // However, simple ordering usually works if not combined with complex where clauses.
     const snapshot = await db.collection('messages').orderBy('createdAt', 'desc').get();
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error("Error fetching messages", error);
-    return [];
+    // Fallback fetch without order if index is missing
+    const snapshot = await db.collection('messages').get();
+    const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+    return msgs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
+};
+
+export const replyToMessage = (messageId: string, reply: string) => {
+  return db.collection('messages').doc(messageId).update({ reply });
+};
+
+export const subscribeToUserMessages = (email: string, callback: (messages: Message[]) => void) => {
+  // Removed orderBy('createdAt') to prevent "Missing Index" error on composite queries.
+  // We filter by email here, then sort the results in memory.
+  return db.collection('messages')
+    .where('email', '==', email)
+    .onSnapshot(snapshot => {
+      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
+      // Client-side sort: Oldest first (for chat history flow)
+      msgs.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      callback(msgs);
+    });
+};
+
+// --- Settings / Profile ---
+export const getProfileSettings = async () => {
+  try {
+    const doc = await db.collection('settings').doc('profile').get();
+    return doc.exists ? doc.data() : null;
+  } catch (error) {
+    console.error("Error fetching profile settings", error);
+    return null;
+  }
+};
+
+export const updateProfileSettings = (data: any) => {
+  return db.collection('settings').doc('profile').set(data, { merge: true });
 };

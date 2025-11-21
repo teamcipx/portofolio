@@ -1,9 +1,11 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User as UserIcon, Lock } from 'lucide-react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { sendMessageToGemini } from '../services/geminiService';
-import { sendMessageToAdmin } from '../services/dataService';
+import { sendMessageToAdmin, subscribeToUserMessages } from '../services/dataService';
 import { useAuth } from '../contexts/AuthContext';
+import { Message } from '../types';
 
 const { Link } = ReactRouterDOM;
 
@@ -25,16 +27,48 @@ const ChatWidget: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isOpen]);
+
+  // Real-time listener for Live Chat
+  useEffect(() => {
+    let unsubscribe: any;
+    if (mode === 'LIVE' && user && user.email) {
+      unsubscribe = subscribeToUserMessages(user.email, (msgs) => {
+        const formattedMessages: any[] = [];
+        msgs.forEach((msg: Message) => {
+          // User message
+          formattedMessages.push({ sender: 'user', text: msg.text });
+          // Admin reply (if exists)
+          if (msg.reply) {
+            formattedMessages.push({ sender: 'admin', text: msg.reply });
+          }
+        });
+        // If no messages, keep a welcome message or empty
+        if (formattedMessages.length === 0) {
+             setMessages([{ sender: 'admin', text: "Welcome to Live Chat. Leave a message and Siam will reply here." }]);
+        } else {
+             setMessages(formattedMessages);
+        }
+      });
+    } else if (mode === 'AI') {
+        // Reset to AI welcome if switching back to AI and empty
+        if (messages.length === 0) {
+             setMessages([{ sender: 'ai', text: 'Hi! I am Siam\'s AI Assistant. Ask me anything about his designs, courses, or availability!' }]);
+        }
+    }
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [mode, user]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage = input.trim();
     setInput('');
-    setMessages(prev => [...prev, { sender: 'user', text: userMessage }]);
 
     if (mode === 'AI') {
+        setMessages(prev => [...prev, { sender: 'user', text: userMessage }]);
         setIsLoading(true);
         const aiResponse = await sendMessageToGemini(userMessage);
         setIsLoading(false);
@@ -52,11 +86,15 @@ const ChatWidget: React.FC = () => {
             user.email, 
             user.photoUrl
         );
-        
-        setTimeout(() => {
-            setMessages(prev => [...prev, { sender: 'admin', text: "Thanks! Siam has received your message and will reply to your email." }]);
-        }, 1000);
     }
+  };
+
+  const switchMode = (newMode: 'AI' | 'LIVE') => {
+      setMode(newMode);
+      setMessages([]); // Clear messages on switch to avoid context mix
+      if (newMode === 'AI') {
+           setMessages([{ sender: 'ai', text: 'Hi! I am Siam\'s AI Assistant. Ask me anything about his designs, courses, or availability!' }]);
+      }
   };
 
   return (
@@ -81,7 +119,7 @@ const ChatWidget: React.FC = () => {
             <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
                 {mode === 'AI' ? <Bot size={20} /> : <UserIcon size={20} />}
-                <h3 className="font-semibold">{mode === 'AI' ? 'AI Assistant' : 'Live Message'}</h3>
+                <h3 className="font-semibold">{mode === 'AI' ? 'AI Assistant' : 'Live Chat'}</h3>
                 </div>
                 <button onClick={() => setIsOpen(false)} className="hover:bg-brand-700 p-1 rounded">
                 <X size={20} />
@@ -91,13 +129,13 @@ const ChatWidget: React.FC = () => {
             {/* Mode Switcher */}
             <div className="flex bg-brand-700 p-1 rounded-lg text-xs font-bold">
                 <button 
-                    onClick={() => setMode('AI')} 
+                    onClick={() => switchMode('AI')} 
                     className={`flex-1 py-1 rounded ${mode === 'AI' ? 'bg-white text-brand-600' : 'text-brand-200 hover:text-white'}`}
                 >
                     AI Bot
                 </button>
                 <button 
-                    onClick={() => setMode('LIVE')}
+                    onClick={() => switchMode('LIVE')}
                     className={`flex-1 py-1 rounded ${mode === 'LIVE' ? 'bg-white text-brand-600' : 'text-brand-200 hover:text-white'}`}
                 >
                     Human
@@ -155,7 +193,7 @@ const ChatWidget: React.FC = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder={mode === 'AI' ? "Ask me anything..." : "Leave a message..."}
+                    placeholder={mode === 'AI' ? "Ask me anything..." : "Type your message..."}
                     className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                     <button
