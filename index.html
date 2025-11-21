@@ -3,7 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Siam Hasan | Creative Director</title>
+    
+    <!-- SEO & Meta Tags -->
+    <title>Siam Hasan | Senior Product Designer & Frontend Developer</title>
+    <meta name="description" content="Portfolio of Siam Hasan - Expert Graphic Designer and React Developer based in Dhaka. Specializing in Branding, UI/UX Design, and Modern Web Development.">
+    <meta name="keywords" content="Siam Hasan, Graphic Designer, UI/UX Designer, React Developer, Frontend Developer, Branding Expert, Portfolio, Dhaka, Web Design">
+    <meta name="author" content="Siam Hasan">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://siamhasan.com/">
+    <meta property="og:title" content="Siam Hasan | Senior Product Designer">
+    <meta property="og:description" content="Creative Director & Developer helping brands build world-class digital experiences.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://siamhasan.com/">
+    <meta property="twitter:title" content="Siam Hasan | Senior Product Designer">
+    <meta property="twitter:description" content="Creative Director & Developer helping brands build world-class digital experiences.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -45,6 +65,9 @@
             animation: {
               'blob': 'blob 7s infinite',
               'fade-in': 'fadeIn 0.5s ease-out forwards',
+              'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 6s ease-in-out infinite',
             },
             keyframes: {
               blob: {
@@ -54,8 +77,16 @@
                 '100%': { transform: 'translate(0px, 0px) scale(1)' },
               },
               fadeIn: {
-                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
               }
             }
           },
@@ -65,6 +96,28 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- JSON-LD Structured Data for Person -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Siam Hasan",
+      "url": "https://siamhasan.com",
+      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
+      "jobTitle": "Senior Product Designer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "TechFlow Solutions"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/siamhasan",
+        "https://twitter.com/siamhasan",
+        "https://dribbble.com/siamhasan"
+      ]
+    }
+    </script>
+
     <style>
       body { font-family: 'Outfit', sans-serif; background-color: #fdfbfc; color: #0f172a; }
       
@@ -79,20 +132,36 @@
       
       /* Glassmorphism Utilities */
       .glass-nav {
-        background: rgba(255, 255, 255, 0.7);
+        background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.5);
       }
       
       .glass-card {
-        background: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+      }
+
+      /* Dot Pattern Background */
+      .bg-dot-pattern {
+        background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+
+      /* Text Gradient Animation */
+      .animate-text-gradient {
+        background-size: 200% auto;
+        animation: textGradient 5s linear infinite;
+      }
+
+      @keyframes textGradient {
+        to { background-position: 200% center; }
       }
     </style>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",

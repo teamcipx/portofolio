@@ -1,48 +1,51 @@
 import React from 'react';
-import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, Mail, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-dark-bg text-dark-text py-12">
+    <footer className="bg-dark-bg text-dark-text py-12 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <h2 className="text-2xl font-bold mb-4">Siam Hasan</h2>
+            <h2 className="text-2xl font-bold mb-4 text-white">Siam Hasan</h2>
             <p className="text-dark-muted max-w-sm">
-              Creating visual experiences that matter. Specialized in branding, UI/UX, and digital art.
+              Creating visual experiences that matter. Specialized in strategic branding, intuitive UI/UX, and modern web development.
             </p>
             <div className="flex space-x-4 mt-6">
-              <a href="#" className="text-dark-muted hover:text-white transition"><Facebook size={20} /></a>
-              <a href="#" className="text-dark-muted hover:text-white transition"><Twitter size={20} /></a>
-              <a href="#" className="text-dark-muted hover:text-white transition"><Instagram size={20} /></a>
-              <a href="#" className="text-dark-muted hover:text-white transition"><Linkedin size={20} /></a>
+              <a href="#" className="text-dark-muted hover:text-brand-400 transition transform hover:scale-110"><Facebook size={20} /></a>
+              <a href="#" className="text-dark-muted hover:text-brand-400 transition transform hover:scale-110"><Twitter size={20} /></a>
+              <a href="#" className="text-dark-muted hover:text-brand-400 transition transform hover:scale-110"><Instagram size={20} /></a>
+              <a href="#" className="text-dark-muted hover:text-brand-400 transition transform hover:scale-110"><Linkedin size={20} /></a>
             </div>
           </div>
           
           <div>
             <h3 className="text-lg font-semibold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2 text-dark-muted">
-              <li><a href="#/" className="hover:text-brand-500 transition">Home</a></li>
-              <li><a href="#/portfolio" className="hover:text-brand-500 transition">Portfolio</a></li>
-              <li><a href="#/shop" className="hover:text-brand-500 transition">Shop Courses</a></li>
-              <li><a href="#/contact" className="hover:text-brand-500 transition">Contact</a></li>
+              <li><Link to="/" className="hover:text-brand-500 transition">Home</Link></li>
+              <li><Link to="/portfolio" className="hover:text-brand-500 transition">Portfolio</Link></li>
+              <li><Link to="/shop" className="hover:text-brand-500 transition">Shop Assets</Link></li>
+              <li><Link to="/contact" className="hover:text-brand-500 transition">Contact Me</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-white">Contact</h3>
-            <ul className="space-y-2 text-dark-muted">
+            <h3 className="text-lg font-semibold mb-4 text-white">Get in Touch</h3>
+            <ul className="space-y-3 text-dark-muted">
               <li className="flex items-center gap-2">
-                <Mail size={16} />
-                <span>hello@siamhasan.design</span>
+                <Mail size={16} className="text-brand-500" />
+                <a href="mailto:hello@siamhasan.com" className="hover:text-white transition">hello@siamhasan.com</a>
               </li>
-              <li>New York, NY 10012</li>
-              <li>+1 (555) 123-4567</li>
+              <li className="flex items-start gap-2">
+                <MapPin size={16} className="text-brand-500 mt-1" />
+                <span>Dhaka, Bangladesh<br/><span className="text-xs text-gray-500">Available Remote Worldwide</span></span>
+              </li>
             </ul>
           </div>
         </div>
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-dark-muted text-sm">
-          &copy; {new Date().getFullYear()} Siam Hasan. All rights reserved.
+          &copy; {new Date().getFullYear()} Siam Hasan. All rights reserved. Designed & Built by Siam.
         </div>
       </div>
     </footer>

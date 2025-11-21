@@ -1,125 +1,317 @@
 
 import React from 'react';
-import { ArrowRight, Download, Star, PlayCircle, Palette, Layers, MousePointer2 } from 'lucide-react';
+import { ArrowRight, Download, Star, PlayCircle, Palette, Layers, MousePointer2, Zap, CheckCircle2, PenTool, Monitor, Cpu, Code2, Layout, Figma, Briefcase, GraduationCap, BookOpen, Calendar, Verified } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { CV_URL, PROJECTS, TESTIMONIALS } from '../constants';
+import { CV_URL, PROJECTS, TESTIMONIALS, EXPERIENCE, EDUCATION, BLOGS, PROFILE_PIC } from '../constants';
 
 const Home: React.FC = () => {
   return (
-    <div className="animate-in fade-in duration-500">
+    <div className="animate-in fade-in duration-500 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-brand-50/50 to-white overflow-hidden">
-        {/* Background Blobs */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[40rem] h-[40rem] rounded-full bg-brand-200/40 mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[35rem] h-[35rem] rounded-full bg-accent-200/40 mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+      <section className="relative bg-gradient-to-b from-brand-50/50 via-white to-white min-h-[90vh] flex items-center bg-dot-pattern">
+        {/* Animated Background Shapes */}
+        <div className="absolute top-20 left-0 w-[30rem] h-[30rem] rounded-full bg-purple-200/30 mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div className="absolute top-20 right-0 w-[30rem] h-[30rem] rounded-full bg-brand-200/30 mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-32 left-1/2 transform -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-accent-100/40 mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
         
-        <div className="max-w-7xl mx-auto pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
-            <div className="lg:col-span-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-100 shadow-sm text-sm font-semibold text-brand-600 mb-8 animate-in slide-in-from-bottom-2 fade-in duration-700">
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            {/* Text Content (Left) */}
+            <div className="lg:col-span-7 text-center lg:text-left space-y-8">
+              
+              {/* Availability Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-brand-200 shadow-sm text-sm font-bold text-brand-700 animate-fade-in-up">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                 </span>
-                Available for Freelance Projects
+                Open to Work & Collaborations
               </div>
               
-              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-6 leading-[1.1]">
-                Designing the <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-accent-500">Future of Digital</span>
-              </h1>
+              {/* Main Headline with Animated Name */}
+              <div className="space-y-2 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                <h2 className="text-2xl font-medium text-gray-500">Hello, I am</h2>
+                <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-accent-500 to-brand-600 animate-text-gradient">
+                    SIAM HASAN
+                  </span>
+                </h1>
+                <p className="text-2xl md:text-3xl font-bold text-gray-800">
+                  Creative Director <span className="text-brand-500">&</span> Frontend Developer
+                </p>
+              </div>
               
-              <p className="mt-6 text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed">
-                I'm Siam Hasan. I craft immersive brand identities and intuitive digital experiences that captivate audiences and drive growth.
+              {/* Description */}
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                I blend artistic vision with technical precision to craft <span className="font-bold text-gray-900">pixel-perfect websites</span> and <span className="font-bold text-gray-900">memorable brand identities</span>. Let's turn your complex ideas into elegant, user-centric digital experiences.
               </p>
               
-              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-                <Link to="/portfolio" className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-full text-white bg-gray-900 hover:bg-brand-600 transition-all transform hover:-translate-y-1 shadow-xl shadow-gray-900/20 hover:shadow-brand-500/30">
-                  View Portfolio
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-5 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                <Link to="/contact" className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-gray-900 rounded-full hover:bg-brand-600 hover:scale-105 shadow-lg hover:shadow-brand-500/40 group overflow-hidden">
+                   <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
+                   Start a Project <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <a href={CV_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-8 py-4 border border-gray-200 text-lg font-bold rounded-full text-gray-700 bg-white hover:bg-gray-50 transition gap-2 shadow-sm hover:shadow-md">
-                  <Download size={20} />
-                  Download CV
+                <a href={CV_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-gray-700 transition-all duration-200 bg-white border-2 border-gray-100 rounded-full hover:bg-gray-50 hover:border-brand-200 hover:text-brand-600 shadow-sm hover:shadow-md">
+                  <Download className="mr-2 w-5 h-5" /> Download CV
                 </a>
               </div>
               
-              <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-gray-400 font-medium">
-                 <div className="flex items-center gap-2 hover:text-brand-500 transition"><Palette size={20}/> Branding</div>
-                 <div className="flex items-center gap-2 hover:text-brand-500 transition"><PlayCircle size={20}/> Motion</div>
-                 <div className="flex items-center gap-2 hover:text-brand-500 transition"><Layers size={20}/> UI/UX</div>
+              {/* Tech Stack Pills */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-3 pt-4 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                 {['Figma', 'React 19', 'TypeScript', 'Tailwind', 'AI Integration'].map((tech) => (
+                    <span key={tech} className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-gray-500 bg-white border border-gray-200 rounded-md shadow-sm">
+                       {tech}
+                    </span>
+                 ))}
               </div>
             </div>
             
-            <div className="lg:col-span-6 mt-16 lg:mt-0 relative">
-               <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-brand-500/20 transform rotate-2 hover:rotate-0 transition duration-700 ease-out border-8 border-white bg-white">
-                  <img
-                    className="w-full h-auto object-cover scale-105 hover:scale-100 transition duration-700"
-                    src="https://picsum.photos/800/800?random=99"
-                    alt="Designer workspace"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-8 left-8 right-8">
-                     <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl text-white">
-                        <p className="font-bold text-xl mb-1">Neon City Project</p>
-                        <p className="text-white/80 text-sm">3D Illustration & Motion Design</p>
+            {/* Image/Profile Area (Right) */}
+            <div className="lg:col-span-5 relative mt-12 lg:mt-0 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+               <div className="relative w-80 h-80 md:w-96 md:h-96 mx-auto">
+                  {/* Spinning Border */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-brand-500 via-accent-500 to-brand-500 rounded-full opacity-30 blur-lg animate-pulse-slow"></div>
+                  <div className="absolute -inset-1 bg-gradient-to-tr from-brand-500 to-accent-500 rounded-full animate-spin-slow opacity-70"></div>
+                  
+                  {/* Profile Picture Container */}
+                  <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white shadow-2xl bg-gray-100">
+                     <img 
+                        src={PROFILE_PIC} 
+                        alt="Siam Hasan - Product Designer" 
+                        className="w-full h-full object-cover scale-110 hover:scale-100 transition-transform duration-700"
+                     />
+                  </div>
+
+                  {/* Floating Badges */}
+                  <div className="absolute top-6 -right-4 bg-white p-3 rounded-xl shadow-xl border border-gray-100 flex items-center gap-3 animate-float">
+                     <div className="bg-blue-100 p-2 rounded-full text-blue-600">
+                       <Verified size={20} fill="currentColor" className="text-blue-500 bg-white rounded-full"/>
+                     </div>
+                     <div>
+                       <p className="font-bold text-gray-900 text-sm">Top Rated</p>
+                       <p className="text-xs text-gray-500">Freelancer</p>
+                     </div>
+                  </div>
+
+                  <div className="absolute bottom-8 -left-8 bg-white p-3 rounded-xl shadow-xl border border-gray-100 flex items-center gap-3 animate-float" style={{ animationDelay: '1.5s' }}>
+                     <div className="bg-brand-100 p-2 rounded-full text-brand-600">
+                       <Zap size={20} fill="currentColor" />
+                     </div>
+                     <div>
+                       <p className="font-bold text-gray-900 text-sm">Fast Delivery</p>
+                       <p className="text-xs text-gray-500">Guaranteed</p>
                      </div>
                   </div>
                </div>
-               
-               {/* Floating Stats */}
-               <div className="absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex flex-col items-center animate-bounce" style={{ animationDuration: '4s' }}>
-                  <div className="bg-accent-100 p-3 rounded-full text-accent-600 mb-2">
-                    <MousePointer2 fill="currentColor" size={24} />
-                  </div>
-                  <p className="font-bold text-gray-900 text-lg">120+</p>
-                  <p className="text-xs text-gray-500 font-medium">Projects Done</p>
-               </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-               <div className="absolute top-1/2 -left-12 bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3 animate-pulse hidden lg:flex">
-                  <div className="bg-yellow-100 p-2 rounded-full text-yellow-600">
-                    <Star fill="currentColor" size={24} />
+      {/* Tools & Tech Section */}
+      <section className="py-12 bg-white border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+           <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-8">Powering world-class products with</p>
+           <div className="flex flex-wrap justify-center gap-8 md:gap-16 grayscale hover:grayscale-0 transition-all duration-500">
+              {/* Icons with Hover Effects */}
+              <div className="group flex flex-col items-center gap-3">
+                <div className="p-4 bg-gray-50 rounded-2xl group-hover:bg-[#F24E1E]/10 group-hover:scale-110 transition-all duration-300">
+                  <Figma size={32} className="text-gray-400 group-hover:text-[#F24E1E] transition-colors"/>
+                </div>
+                <span className="text-xs font-bold text-gray-400 group-hover:text-gray-900">Figma</span>
+              </div>
+              
+              <div className="group flex flex-col items-center gap-3">
+                <div className="p-4 bg-gray-50 rounded-2xl group-hover:bg-[#31A8FF]/10 group-hover:scale-110 transition-all duration-300">
+                  <Palette size={32} className="text-gray-400 group-hover:text-[#31A8FF] transition-colors"/>
+                </div>
+                <span className="text-xs font-bold text-gray-400 group-hover:text-gray-900">Adobe XD</span>
+              </div>
+
+              <div className="group flex flex-col items-center gap-3">
+                <div className="p-4 bg-gray-50 rounded-2xl group-hover:bg-[#61DAFB]/10 group-hover:scale-110 transition-all duration-300">
+                  <Code2 size={32} className="text-gray-400 group-hover:text-[#61DAFB] transition-colors"/>
+                </div>
+                <span className="text-xs font-bold text-gray-400 group-hover:text-gray-900">React</span>
+              </div>
+
+              <div className="group flex flex-col items-center gap-3">
+                <div className="p-4 bg-gray-50 rounded-2xl group-hover:bg-[#38B2AC]/10 group-hover:scale-110 transition-all duration-300">
+                  <Layout size={32} className="text-gray-400 group-hover:text-[#38B2AC] transition-colors"/>
+                </div>
+                <span className="text-xs font-bold text-gray-400 group-hover:text-gray-900">Tailwind</span>
+              </div>
+           </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-24 bg-gray-50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-dot-pattern opacity-30"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-brand-500 font-bold tracking-wider uppercase text-sm">Services</span>
+            <h2 className="text-4xl font-extrabold text-gray-900 mt-2 mb-4">What I Do Best</h2>
+            <p className="text-xl text-gray-600">Comprehensive design solutions tailored to your business goals.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Service Card 1 */}
+            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-2xl transition-all hover:-translate-y-2 duration-300 group">
+              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Palette size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Brand Identity</h3>
+              <p className="text-gray-600 mb-6 text-sm leading-relaxed">More than just a logo. I build complete visual systems, color palettes, and brand guidelines that tell your story and build trust.</p>
+              <ul className="space-y-3 border-t border-gray-50 pt-6">
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Logo Design & Strategy</li>
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Brand Guidelines</li>
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Marketing Assets</li>
+              </ul>
+            </div>
+
+            {/* Service Card 2 (Highlighted) */}
+            <div className="bg-gradient-to-b from-brand-50 to-white rounded-3xl p-8 border-2 border-brand-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 duration-300 group relative">
+              <div className="absolute top-6 right-6 bg-brand-100 text-brand-700 text-[10px] font-bold px-3 py-1 rounded-full tracking-wide">POPULAR</div>
+              <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center text-brand-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Monitor size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Web Design & Dev</h3>
+              <p className="text-gray-600 mb-6 text-sm leading-relaxed">Modern, responsive websites designed in Figma and developed with React & Tailwind for lightning-fast performance.</p>
+              <ul className="space-y-3 border-t border-brand-100 pt-6">
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-brand-500"></div> UI/UX Design (Figma)</li>
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-brand-500"></div> React Development</li>
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-brand-500"></div> Interactive Prototyping</li>
+              </ul>
+            </div>
+
+            {/* Service Card 3 */}
+            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-2xl transition-all hover:-translate-y-2 duration-300 group">
+              <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform duration-300">
+                <PenTool size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Digital Art</h3>
+              <p className="text-gray-600 mb-6 text-sm leading-relaxed">Custom digital illustrations, icon sets, and 3D assets to make your product or website uniquely yours and stand out from the crowd.</p>
+              <ul className="space-y-3 border-t border-gray-50 pt-6">
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div> Custom Iconography</li>
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div> Character Design</li>
+                <li className="flex items-center gap-3 text-sm font-medium text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div> Lottie Animations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Experience & Education Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            
+            {/* Experience */}
+            <div>
+              <div className="flex items-center gap-4 mb-10">
+                <div className="p-3 bg-gray-900 text-white rounded-xl shadow-lg">
+                   <Briefcase size={24} />
+                </div>
+                <div>
+                   <h3 className="text-3xl font-bold text-gray-900">Experience</h3>
+                   <p className="text-gray-500 text-sm">My professional journey</p>
+                </div>
+              </div>
+              
+              <div className="space-y-10 relative before:absolute before:left-9 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-100 before:border-l before:border-dashed before:border-gray-300">
+                {EXPERIENCE.map((exp) => (
+                  <div key={exp.id} className="relative pl-24 group">
+                    {/* Timeline Dot */}
+                    <div className="absolute left-[30px] top-0 w-3 h-3 bg-white border-2 border-gray-400 rounded-full z-10 group-hover:border-brand-500 group-hover:scale-125 transition-all"></div>
+                    
+                    <div className="group-hover:-translate-y-1 transition-transform duration-300">
+                      <span className="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full mb-2 group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors">
+                        {exp.period}
+                      </span>
+                      <h4 className="text-xl font-bold text-gray-900">{exp.role}</h4>
+                      <p className="text-brand-600 font-bold text-sm mb-3">{exp.company}</p>
+                      <p className="text-gray-600 text-sm leading-relaxed border-l-2 border-gray-100 pl-4">{exp.description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold text-gray-900">5.0 Rating</p>
-                    <p className="text-xs text-gray-500">Client Satisfaction</p>
+                ))}
+              </div>
+            </div>
+
+            {/* Education */}
+            <div>
+              <div className="flex items-center gap-4 mb-10">
+                <div className="p-3 bg-gray-900 text-white rounded-xl shadow-lg">
+                   <GraduationCap size={24} />
+                </div>
+                <div>
+                   <h3 className="text-3xl font-bold text-gray-900">Education</h3>
+                   <p className="text-gray-500 text-sm">Academic background</p>
+                </div>
+              </div>
+
+              <div className="space-y-8">
+                {EDUCATION.map((edu) => (
+                  <div key={edu.id} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 group">
+                    <div className="flex justify-between items-start mb-4">
+                      <h4 className="text-xl font-bold text-gray-900 group-hover:text-brand-600 transition-colors">{edu.degree}</h4>
+                      <span className="text-xs font-bold text-white bg-gray-900 px-3 py-1 rounded-full">{edu.period}</span>
+                    </div>
+                    <p className="text-gray-500 font-medium text-sm mb-4 flex items-center gap-2">
+                      <BookOpen size={14}/> {edu.institution}
+                    </p>
+                    <p className="text-gray-600 text-sm">{edu.description}</p>
                   </div>
-               </div>
+                ))}
+
+                {/* Skills Box */}
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-3xl text-white shadow-xl">
+                   <h3 className="text-xl font-bold mb-6 flex items-center gap-2"><Cpu size={20}/> Technical Arsenal</h3>
+                   <div className="flex flex-wrap gap-2">
+                      {['Figma', 'Adobe XD', 'Photoshop', 'Illustrator', 'React.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'Node.js', 'Git'].map((skill) => (
+                        <span key={skill} className="px-4 py-2 bg-white/10 border border-white/10 rounded-lg text-sm font-medium hover:bg-white hover:text-gray-900 transition cursor-default">
+                          {skill}
+                        </span>
+                      ))}
+                   </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Featured Projects Preview */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
             <div>
-              <span className="text-brand-500 font-bold tracking-wider uppercase text-sm">Selected Works</span>
-              <h2 className="text-4xl font-extrabold text-gray-900 mt-2">Featured Projects</h2>
+              <span className="text-brand-500 font-bold tracking-wider uppercase text-sm">Portfolio</span>
+              <h2 className="text-4xl font-extrabold text-gray-900 mt-2">Selected Works</h2>
             </div>
-            <Link to="/portfolio" className="flex items-center px-6 py-3 rounded-full bg-gray-50 text-gray-900 hover:bg-brand-50 hover:text-brand-600 font-semibold group transition">
-              View All Works <ArrowRight className="ml-2 group-hover:translate-x-1 transition" size={20} />
+            <Link to="/portfolio" className="flex items-center px-6 py-3 rounded-full bg-white border border-gray-200 text-gray-900 hover:border-brand-500 hover:text-brand-600 shadow-sm hover:shadow-md font-bold group transition">
+              View All Projects <ArrowRight className="ml-2 group-hover:translate-x-1 transition" size={20} />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {PROJECTS.slice(0, 3).map((project) => (
               <div key={project.id} className="group relative cursor-pointer">
-                <div className="relative overflow-hidden rounded-2xl shadow-sm bg-gray-100 mb-4 aspect-[4/3]">
+                <div className="relative overflow-hidden rounded-2xl shadow-md bg-gray-200 mb-5 aspect-[4/3]">
                   <img 
                     src={project.imageUrl} 
                     alt={project.title} 
                     className="object-cover w-full h-full group-hover:scale-110 transition duration-700 ease-out"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
-                     <div className="bg-white p-4 rounded-full text-gray-900 transform translate-y-4 group-hover:translate-y-0 transition duration-300">
-                        <ArrowRight size={24} className="-rotate-45" />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition duration-300"></div>
+                  <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-300">
+                     <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg">
+                        <p className="text-brand-600 text-xs font-bold uppercase mb-1">{project.category}</p>
+                        <h3 className="text-lg font-bold text-gray-900">{project.title}</h3>
                      </div>
                   </div>
-                </div>
-                <div>
-                  <span className="text-brand-600 text-xs font-bold uppercase tracking-wide">{project.category}</span>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-brand-600 transition mt-1">{project.title}</h3>
                 </div>
               </div>
             ))}
@@ -127,48 +319,60 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-gray-50 overflow-hidden relative">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+      {/* Blogs Section */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Client Love</h2>
-            <p className="text-xl text-gray-500">Don't just take my word for it. Here is what industry leaders say about my work.</p>
+          <div className="text-center mb-16">
+             <span className="text-brand-500 font-bold tracking-wider uppercase text-sm">Blog</span>
+             <h2 className="text-4xl font-extrabold text-gray-900 mt-2">Latest Insights</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.id} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-brand-100/50 transition duration-300 relative group">
-                <div className="absolute -top-4 -right-4 bg-gradient-to-br from-brand-400 to-brand-600 w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl font-serif transform group-hover:rotate-12 transition">"</div>
-                <div className="flex gap-1 text-yellow-400 mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
-                </div>
-                <p className="text-gray-700 text-lg leading-relaxed mb-8 italic">"{t.content}"</p>
-                <div className="flex items-center gap-4 pt-6 border-t border-gray-50">
-                  <img src={t.avatarUrl} alt={t.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-brand-100" />
-                  <div>
-                    <h4 className="font-bold text-gray-900 text-base">{t.name}</h4>
-                    <p className="text-xs text-brand-600 font-bold uppercase tracking-wide">{t.company}</p>
+            {BLOGS.map((blog) => (
+              <article key={blog.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 flex flex-col">
+                <div className="relative h-56 overflow-hidden">
+                  <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700"/>
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-md text-xs font-bold text-gray-900 shadow-sm">
+                    {blog.category}
                   </div>
                 </div>
-              </div>
+                <div className="p-8 flex-1 flex flex-col">
+                  <div className="flex items-center gap-3 text-xs text-gray-400 mb-4 font-medium uppercase tracking-wide">
+                    <span className="flex items-center gap-1"><Calendar size={12}/> {blog.date}</span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1"><BookOpen size={12}/> {blog.readTime}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 leading-snug group-hover:text-brand-600 transition">{blog.title}</h3>
+                  <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">{blog.excerpt}</p>
+                  <div className="mt-auto pt-6 border-t border-gray-50">
+                     <a href="#" className="text-gray-900 font-bold text-sm flex items-center gap-2 group-hover:text-brand-600 transition-colors">
+                       Read Full Article <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform"/>
+                     </a>
+                  </div>
+                </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
-      
-      {/* CTA */}
-      <section className="py-24 px-4 bg-white">
-        <div className="max-w-6xl mx-auto bg-gray-900 rounded-[2.5rem] p-12 md:p-24 text-center relative overflow-hidden shadow-2xl shadow-gray-900/30">
+
+      {/* CTA Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-6xl mx-auto bg-gray-900 rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden shadow-2xl">
           {/* Decor */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/20 rounded-full -mr-20 -mt-20 blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-500/20 rounded-full -ml-20 -mb-20 blur-3xl"></div>
+          <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-brand-600/20 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse-slow"></div>
+          <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-accent-600/20 rounded-full -ml-32 -mb-32 blur-3xl animate-pulse-slow" style={{animationDelay: '1s'}}></div>
           
           <div className="relative z-10">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-8 tracking-tight">Let's build something <br/> <span className="text-brand-400">extraordinary.</span></h2>
-            <p className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto">Available for new freelance opportunities and collaborations. Let's turn your vision into a reality.</p>
-            <Link to="/contact" className="inline-block bg-white text-gray-900 px-10 py-5 rounded-full font-bold text-lg hover:bg-brand-50 hover:text-brand-600 transition shadow-xl hover:shadow-2xl hover:scale-105 transform duration-200">
-              Start a Project
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-8 tracking-tight">
+              Ready to start your <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400">next big thing?</span>
+            </h2>
+            <p className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+              I'm currently available for freelance projects. Let's discuss how we can elevate your brand and digital presence.
+            </p>
+            <Link to="/contact" className="inline-flex items-center justify-center bg-white text-gray-900 px-10 py-5 rounded-full font-bold text-lg hover:bg-brand-500 hover:text-white hover:scale-105 transform transition-all duration-300 shadow-xl gap-2">
+              Let's Talk <ArrowRight size={20}/>
             </Link>
           </div>
         </div>
