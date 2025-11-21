@@ -22,57 +22,41 @@ const getFallbackResponse = (message: string): string => {
   
   // Greetings
   if (lowerMsg.match(/\b(hi|hello|hey|greetings)\b/)) {
-    return "Hello! I'm Siam's virtual assistant. I can help you with details about his Portfolio, Experience, Blogs, or Services. What would you like to know?";
+    return "Hello! I'm Ali Hossn's virtual assistant. I can help you with Digital Marketing, Video Editing services, or his portfolio. What do you need?";
   }
   
   // Identity
   if (lowerMsg.includes('who are you') || lowerMsg.includes('your name')) {
-    return "I am an AI assistant created to help you navigate Siam Hasan's portfolio. I have full access to his resume and project history.";
+    return "I am an AI assistant for Ali Hossn, an expert Digital Marketer and Video Editor based in Bangladesh.";
   }
 
-  // Experience / Resume
-  if (lowerMsg.includes('experience') || lowerMsg.includes('resume') || lowerMsg.includes('background') || lowerMsg.includes('job')) {
-    return `Siam has over 5 years of experience. currently, he is a Senior Product Designer at TechFlow Solutions. Before that, he was a Top Rated Freelancer on Upwork (100+ projects).`;
-  }
-
-  // Education
-  if (lowerMsg.includes('education') || lowerMsg.includes('study') || lowerMsg.includes('degree') || lowerMsg.includes('university')) {
-    return `Siam holds a B.Sc in Computer Science from Daffodil International University (3.8 CGPA) and is also Google UX Design certified.`;
-  }
-
-  // Blogs / Writing
-  if (lowerMsg.includes('blog') || lowerMsg.includes('write') || lowerMsg.includes('article') || lowerMsg.includes('post')) {
-    return `Siam writes about Design and Tech. His latest article is "The Future of UI Design: AI Integration". Check the 'Insights' section on the home page!`;
+  // Experience / Skills
+  if (lowerMsg.includes('experience') || lowerMsg.includes('skill') || lowerMsg.includes('work') || lowerMsg.includes('job')) {
+    return `Ali has extensive experience in:\n1. SEO & Digital Marketing (Meta/Google Ads)\n2. Video Editing (Premiere Pro/After Effects)\n3. Graphic Design & Branding.`;
   }
 
   // Services
   if (lowerMsg.includes('service') || lowerMsg.includes('offer') || lowerMsg.includes('do')) {
-    return "Siam specializes in:\n1. Brand Identity Design\n2. UI/UX Design (Web & Mobile)\n3. Frontend Development (React/Tailwind)\n\nCheck the 'Home' page for more details!";
-  }
-
-  // Pricing
-  if (lowerMsg.includes('price') || lowerMsg.includes('cost') || lowerMsg.includes('rate') || lowerMsg.includes('quote')) {
-    return "Pricing depends on the project scope. \n- Logo Packages start at $500\n- Web Design starts at $1,200\n\nFor a specific quote, please use the Contact form!";
+    return "Ali offers:\n- SEO Optimization (Ranking #1)\n- Professional Video Editing for YouTube/Reels\n- Full Digital Marketing Strategy\n- Graphic Design.";
   }
 
   // Contact
   if (lowerMsg.includes('contact') || lowerMsg.includes('email') || lowerMsg.includes('phone') || lowerMsg.includes('hire')) {
-    return "You can reach Siam directly at: hello@siamhasan.com. He is currently accepting new projects for Q4 2024.";
+    return "You can reach Ali directly at: helllo.alihosen@gmail.com or +8801781146747. He is available for remote work.";
   }
 
   // Shop
-  if (lowerMsg.includes('shop') || lowerMsg.includes('course') || lowerMsg.includes('asset') || lowerMsg.includes('buy')) {
-    return "Siam sells high-quality design assets and courses in the 'Shop' section. Popular items include the 'Adobe Photoshop Mastery' course.";
+  if (lowerMsg.includes('shop') || lowerMsg.includes('course') || lowerMsg.includes('buy')) {
+    return "Ali sells premium Video Editing courses and Design assets in the 'Shop' section.";
   }
 
   // Default
-  return "I can tell you about Siam's Experience, Education, Projects, or Blog posts. What are you interested in?";
+  return "I can tell you about Ali's Services (SEO, Video, Marketing), Portfolio, or Contact info. What are you looking for?";
 };
 
 export const sendMessageToGemini = async (message: string): Promise<string> => {
   // 1. Check if AI is available
   if (!ai) {
-    // Simulate network delay for realism
     await new Promise(resolve => setTimeout(resolve, 800)); 
     return getFallbackResponse(message);
   }
@@ -80,26 +64,27 @@ export const sendMessageToGemini = async (message: string): Promise<string> => {
   // 2. Active AI Mode
   try {
     const systemInstruction = `
-      You are an advanced AI assistant for Siam Hasan, a professional Graphic Designer & Frontend Developer.
-      Your tone is professional, creative, intelligent, and enthusiastic.
+      You are the AI Assistant for Ali Hossn.
       
-      About Siam:
-      - Based in Dhaka, Bangladesh.
-      - Expert in Branding, UI/UX, and Web Design.
-      - Open to remote work.
+      Identity:
+      - Name: Ali Hossn
+      - Role: Digital Marketer, SEO Expert, Video Editor, Motion Graphics Designer.
+      - Location: Sherpur, Mymensingh, Bangladesh (Available Globally/Remote).
+      - Contact: helllo.alihosen@gmail.com | +8801781146747
       
-      Context Data:
-      Projects: ${JSON.stringify(PROJECTS.map(p => ({ title: p.title, category: p.category, description: p.description })))}
-      Products: ${JSON.stringify(PRODUCTS.map(p => ({ title: p.title, price: p.price, type: p.type })))}
-      Experience: ${JSON.stringify(EXPERIENCE)}
-      Education: ${JSON.stringify(EDUCATION)}
-      Latest Blogs: ${JSON.stringify(BLOGS.map(b => b.title))}
+      Tone:
+      - Professional, Confident, Helpful, Persuasive.
       
-      Instructions:
-      - Answer concisely (max 3-4 sentences).
-      - If asked about background, combine Experience and Education data.
-      - Promote his blog posts if the topic is relevant (e.g. if they ask about AI, mention his AI blog).
-      - Encourage users to visit the 'Contact' page for hires.
+      Knowledge Base:
+      - Expertise: SEO (On-page/Off-page), Social Media Ads, Video Production (Premiere/After Effects), Branding.
+      - Projects: ${JSON.stringify(PROJECTS.map(p => ({ title: p.title, category: p.category })))}
+      - Products/Courses: ${JSON.stringify(PRODUCTS.map(p => ({ title: p.title, price: p.price, type: p.type })))}
+      
+      Goal:
+      - Answer client queries about services.
+      - Promote the 'Shop' for courses.
+      - Encourage hiring for SEO/Video projects.
+      - Keep answers concise.
     `;
 
     const response = await ai.models.generateContent({
@@ -110,10 +95,9 @@ export const sendMessageToGemini = async (message: string): Promise<string> => {
       }
     });
 
-    return response.text || "I'm currently designing something else and couldn't process that. Try again?";
+    return response.text || "I'm analyzing some data right now. Could you ask that again?";
   } catch (error) {
     console.error("Gemini Error:", error);
-    // Fallback if the actual API call fails (e.g. quota exceeded)
-    return "I'm having trouble connecting to the creative brain right now. Please email hello@siamhasan.com directly.";
+    return "My AI brain is taking a short break. Please email Ali directly at helllo.alihosen@gmail.com.";
   }
 };

@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Download, Zap, Palette, Monitor, PenTool, Calendar, Verified, Video, TrendingUp, Search, Megaphone, Play, BookOpen, GraduationCap, Briefcase, Star, Quote, Users } from 'lucide-react';
 import * as ReactRouterDOM from 'react-router-dom';
-import { CV_URL, PROFILE_PIC as DEFAULT_PROFILE_PIC, CLIENT_LOGOS, TESTIMONIALS, EXPERIENCE, EDUCATION } from '../constants';
-import { getProjects, getBlogs, getProfileSettings, getProducts } from '../services/dataService';
-import { Project, BlogPost, Product } from '../types';
+import { CV_URL, PROFILE_PIC as DEFAULT_PROFILE_PIC, CLIENT_LOGOS, EXPERIENCE, EDUCATION } from '../constants';
+import { getProjects, getBlogs, getProfileSettings, getProducts, getTestimonials } from '../services/dataService';
+import { Project, BlogPost, Product, Testimonial } from '../types';
 import SeoHead from '../components/SeoHead';
 
 const { Link } = ReactRouterDOM;
@@ -40,6 +40,7 @@ const Home: React.FC = () => {
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
   const [featuredCourses, setFeaturedCourses] = useState<Product[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [profilePic, setProfilePic] = useState(DEFAULT_PROFILE_PIC);
 
@@ -49,10 +50,12 @@ const Home: React.FC = () => {
       const blogs = await getBlogs();
       const products = await getProducts();
       const settings = await getProfileSettings();
+      const reviews = await getTestimonials();
       
       setFeaturedProjects(projects.slice(0, 3));
       setRecentBlogs(blogs.slice(0, 3));
       setFeaturedCourses(products.filter(p => p.type === 'Course').slice(0, 3));
+      setTestimonials(reviews);
       
       if (settings && settings.profilePic) {
         setProfilePic(settings.profilePic);
@@ -249,7 +252,6 @@ const Home: React.FC = () => {
            </div>
            
            <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-black aspect-video group cursor-pointer">
-              {/* Replace src with your actual video embed URL */}
               <iframe 
                 width="100%" 
                 height="100%" 
@@ -306,7 +308,6 @@ const Home: React.FC = () => {
       {/* Featured Projects Preview */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Fixed Alignment Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
             <div>
               <span className="text-brand-500 font-bold tracking-wider uppercase text-sm">Portfolio</span>
@@ -397,7 +398,7 @@ const Home: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-               {TESTIMONIALS.map(t => (
+               {testimonials.map(t => (
                   <div key={t.id} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative">
                      <Quote className="absolute top-8 right-8 text-gray-100 w-12 h-12" />
                      <p className="text-gray-600 leading-relaxed mb-6 relative z-10">"{t.content}"</p>
@@ -410,13 +411,9 @@ const Home: React.FC = () => {
                      </div>
                   </div>
                ))}
-               {/* Add a generic/placeholder testimonial if list is short */}
-               {TESTIMONIALS.length < 3 && (
-                 <div className="bg-brand-600 p-8 rounded-3xl shadow-lg text-white flex flex-col justify-center items-center text-center">
-                    <Users className="w-12 h-12 mb-4 text-brand-200"/>
-                    <h4 className="text-2xl font-bold mb-2">Join 50+ Happy Clients</h4>
-                    <p className="text-brand-100 mb-6">Let's create something amazing together.</p>
-                    <Link to="/contact" className="px-6 py-2 bg-white text-brand-600 rounded-full font-bold hover:bg-brand-50 transition">Start Project</Link>
+               {testimonials.length === 0 && (
+                 <div className="col-span-3 text-center py-12 bg-white rounded-3xl border border-dashed">
+                    <p className="text-gray-400">Testimonials will appear here once added from Admin Panel.</p>
                  </div>
                )}
             </div>

@@ -1,6 +1,6 @@
 
 import { db } from './firebase';
-import { Project, Product, BlogPost, Message, Order } from '../types';
+import { Project, Product, BlogPost, Message, Order, Testimonial } from '../types';
 import firebase from 'firebase/compat/app';
 
 // Generic Fetch Function (Strictly Firebase)
@@ -44,6 +44,11 @@ export const getBlogById = async (id: string): Promise<BlogPost | null> => {
 };
 export const addBlog = (data: Omit<BlogPost, 'id'>) => db.collection('blogs').add(data);
 export const deleteBlog = (id: string) => db.collection('blogs').doc(id).delete();
+
+// --- Testimonials ---
+export const getTestimonials = () => fetchData<Testimonial>('testimonials');
+export const addTestimonial = (data: Omit<Testimonial, 'id'>) => db.collection('testimonials').add(data);
+export const deleteTestimonial = (id: string) => db.collection('testimonials').doc(id).delete();
 
 // --- Messages (Chat) ---
 export const sendMessageToAdmin = (text: string, sender: string = 'Guest', email?: string, photoUrl?: string) => {
