@@ -102,3 +102,14 @@ export interface Order {
   status: 'pending' | 'completed' | 'rejected';
   createdAt: string;
 }
+
+export interface Booking {
+  id?: string;
+  name: string;
+  email: string;
+  date: string;
+  time: string;
+  topic: string;
+  status: 'scheduled' | 'completed' | 'cancelled';
+  createdAt: string;
+}

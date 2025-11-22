@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
-import { ShoppingCart, Menu, X, User } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Calendar } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -48,6 +48,10 @@ const Navbar: React.FC = () => {
 
           {/* Icons */}
           <div className="hidden md:flex items-center space-x-3">
+             <Link to="/book" className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-brand-50 text-brand-600 text-sm font-bold hover:bg-brand-100 transition border border-brand-100">
+                <Calendar size={16} /> Book Call
+             </Link>
+
              {user?.role === 'ADMIN' && (
                 <Link to="/admin" className="px-4 py-2 rounded-full bg-gray-900 text-white text-sm font-bold hover:bg-gray-800 transition shadow-lg shadow-gray-900/20">
                   Dashboard
@@ -106,6 +110,7 @@ const Navbar: React.FC = () => {
             <Link to="/portfolio" className="text-2xl font-bold text-gray-900 hover:text-brand-500" onClick={() => setIsOpen(false)}>Portfolio</Link>
             <Link to="/shop" className="text-2xl font-bold text-gray-900 hover:text-brand-500" onClick={() => setIsOpen(false)}>Shop</Link>
             <Link to="/contact" className="text-2xl font-bold text-gray-900 hover:text-brand-500" onClick={() => setIsOpen(false)}>Contact</Link>
+            <Link to="/book" className="text-2xl font-bold text-brand-600 hover:text-brand-700" onClick={() => setIsOpen(false)}>Book Consultation</Link>
              <hr className="border-gray-100 my-4"/>
              {user?.role === 'ADMIN' && (
               <Link to="/admin" className="text-lg font-bold text-brand-600" onClick={() => setIsOpen(false)}>Admin Dashboard</Link>

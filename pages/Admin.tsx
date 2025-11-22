@@ -2,22 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save, CreditCard, CheckCircle, XCircle, Star, PieChart, TrendingUp, Menu } from 'lucide-react';
+import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save, CreditCard, CheckCircle, XCircle, Star, PieChart, TrendingUp, Menu, Calendar } from 'lucide-react';
 import { uploadImageToImgBB } from '../services/imgbbService';
 import { 
   addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, 
   getProducts, deleteProduct, getBlogs, deleteBlog, replyToMessage, 
   updateProfileSettings, getProfileSettings, getAllOrders, updateOrderStatus,
-  getTestimonials, addTestimonial, deleteTestimonial
+  getTestimonials, addTestimonial, deleteTestimonial, getBookings
 } from '../services/dataService';
-import { Project, Product, BlogPost, Order, Testimonial } from '../types';
+import { Project, Product, BlogPost, Order, Testimonial, Booking } from '../types';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const { Navigate } = ReactRouterDOM;
 
 const Admin: React.FC = () => {
   const { user, isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'products' | 'blogs' | 'messages' | 'orders' | 'settings' | 'testimonials'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'products' | 'blogs' | 'messages' | 'orders' | 'settings' | 'testimonials' | 'bookings'>('overview');
   
   // Data Lists
   const [projects, setProjects] = useState<Project[]>([]);
@@ -26,6 +26,7 @@ const Admin: React.FC = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [profilePicUrl, setProfilePicUrl] = useState('');
 
   // Form States
@@ -50,13 +51,14 @@ const Admin: React.FC = () => {
   }, [isAdmin, activeTab]);
 
   const refreshData = async () => {
-      const [p, prod, b, m, o, t, profile] = await Promise.all([
+      const [p, prod, b, m, o, t, bookingData, profile] = await Promise.all([
         getProjects(), 
         getProducts(), 
         getBlogs(), 
         getMessages(),
         getAllOrders(),
         getTestimonials(),
+        getBookings(),
         getProfileSettings()
       ]);
       setProjects(p);
@@ -65,6 +67,7 @@ const Admin: React.FC = () => {
       setMessages(m);
       setOrders(o);
       setTestimonials(t);
+      setBookings(bookingData);
       if (profile && profile.profilePic) {
         setProfilePicUrl(profile.profilePic);
       }
@@ -193,6 +196,7 @@ const Admin: React.FC = () => {
   // Menu Items Configuration
   const menuItems = [
     { id: 'overview', icon: PieChart, label: 'Overview' },
+    { id: 'bookings', icon: Calendar, label: 'Appointments' },
     { id: 'orders', icon: CreditCard, label: 'Orders' },
     { id: 'messages', icon: MessageSquare, label: 'Messages' },
     { id: 'projects', icon: Briefcase, label: 'Portfolio (Work)' },
@@ -244,7 +248,7 @@ const Admin: React.FC = () => {
               <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
               
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                  <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <div className="flex justify-between items-start mb-4">
                        <div>
@@ -252,6 +256,15 @@ const Admin: React.FC = () => {
                           <h3 className="text-3xl font-bold text-gray-900">${orders.filter(o => o.status === 'completed').reduce((s, o) => s + o.total, 0)}</h3>
                        </div>
                        <div className="p-3 bg-green-100 text-green-600 rounded-xl"><TrendingUp size={24}/></div>
+                    </div>
+                 </div>
+                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                     <div className="flex justify-between items-start mb-4">
+                       <div>
+                          <p className="text-gray-500 text-sm font-medium">Appointments</p>
+                          <h3 className="text-3xl font-bold text-gray-900">{bookings.length}</h3>
+                       </div>
+                       <div className="p-3 bg-purple-100 text-purple-600 rounded-xl"><Calendar size={24}/></div>
                     </div>
                  </div>
                  <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
@@ -266,7 +279,7 @@ const Admin: React.FC = () => {
                  <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                      <div className="flex justify-between items-start mb-4">
                        <div>
-                          <p className="text-gray-500 text-sm font-medium">Total Messages</p>
+                          <p className="text-gray-500 text-sm font-medium">Messages</p>
                           <h3 className="text-3xl font-bold text-gray-900">{messages.length}</h3>
                        </div>
                        <div className="p-3 bg-blue-100 text-blue-600 rounded-xl"><MessageSquare size={24}/></div>
@@ -289,6 +302,52 @@ const Admin: React.FC = () => {
                     </ResponsiveContainer>
                  </div>
               </div>
+           </div>
+        )}
+
+        {/* Bookings Tab */}
+        {activeTab === 'bookings' && (
+           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+               <div className="p-6 border-b border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900">Scheduled Appointments</h2>
+               </div>
+               <table className="w-full text-left border-collapse">
+                  <thead className="bg-gray-50">
+                    <tr className="text-gray-500 text-xs uppercase">
+                      <th className="p-4">Date & Time</th>
+                      <th className="p-4">Client</th>
+                      <th className="p-4">Topic</th>
+                      <th className="p-4">Status</th>
+                      <th className="p-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm divide-y divide-gray-100">
+                    {bookings.length === 0 && (
+                      <tr><td colSpan={5} className="p-8 text-center text-gray-400">No appointments scheduled yet.</td></tr>
+                    )}
+                    {bookings.map(b => (
+                      <tr key={b.id} className="hover:bg-gray-50/50">
+                        <td className="p-4">
+                           <div className="font-bold text-gray-900">{new Date(b.date).toLocaleDateString()}</div>
+                           <div className="text-xs text-gray-500">{b.time}</div>
+                        </td>
+                        <td className="p-4">
+                           <div className="font-bold text-gray-900">{b.name}</div>
+                           <a href={`mailto:${b.email}`} className="text-xs text-brand-600 hover:underline">{b.email}</a>
+                        </td>
+                        <td className="p-4 font-medium">{b.topic}</td>
+                        <td className="p-4">
+                           <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold uppercase">{b.status}</span>
+                        </td>
+                        <td className="p-4 text-right">
+                           <a href={`mailto:${b.email}`} className="inline-flex items-center gap-1 text-gray-500 hover:text-brand-600 text-xs font-bold">
+                              <Reply size={14}/> Contact
+                           </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+               </table>
            </div>
         )}
 

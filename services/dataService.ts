@@ -1,6 +1,6 @@
 
 import { db } from './firebase';
-import { Project, Product, BlogPost, Message, Order, Testimonial } from '../types';
+import { Project, Product, BlogPost, Message, Order, Testimonial, Booking } from '../types';
 import firebase from 'firebase/compat/app';
 
 // Generic Fetch Function (Strictly Firebase)
@@ -120,6 +120,22 @@ export const getAllOrders = async (): Promise<Order[]> => {
 // ADMIN: Update Order Status
 export const updateOrderStatus = (orderId: string, status: 'pending' | 'completed' | 'rejected') => {
   return db.collection('orders').doc(orderId).update({ status });
+};
+
+// --- Bookings ---
+export const createBooking = (booking: Booking) => {
+  return db.collection('bookings').add(booking);
+};
+
+export const getBookings = async (): Promise<Booking[]> => {
+  try {
+    const snapshot = await db.collection('bookings').get();
+    const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Booking));
+    return bookings.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  } catch (error) {
+    console.error("Error fetching bookings", error);
+    return [];
+  }
 };
 
 // --- Settings / Profile ---

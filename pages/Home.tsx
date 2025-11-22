@@ -6,6 +6,8 @@ import { CV_URL, PROFILE_PIC as DEFAULT_PROFILE_PIC, CLIENT_LOGOS, EXPERIENCE, E
 import { getProjects, getBlogs, getProfileSettings, getProducts, getTestimonials } from '../services/dataService';
 import { Project, BlogPost, Product, Testimonial } from '../types';
 import SeoHead from '../components/SeoHead';
+import AnnouncementBar from '../components/AnnouncementBar';
+import BeforeAfterSlider from '../components/BeforeAfterSlider';
 
 const { Link } = ReactRouterDOM;
 
@@ -73,6 +75,8 @@ const Home: React.FC = () => {
         description="Portfolio of Ali Hossn - Expert in SEO, Digital Marketing, Graphic Design and Video Editing. Based in Sherpur, Bangladesh."
         image={profilePic}
       />
+      
+      <AnnouncementBar />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-brand-50/50 via-white to-white min-h-[90vh] flex items-center bg-dot-pattern">
@@ -118,9 +122,9 @@ const Home: React.FC = () => {
                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
                    Hire Me <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <a href={CV_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-gray-700 transition-all duration-200 bg-white border-2 border-gray-100 rounded-full hover:bg-gray-50 hover:border-brand-200 hover:text-brand-600 shadow-sm hover:shadow-md">
-                  <Download className="mr-2 w-5 h-5" /> Download CV
-                </a>
+                <Link to="/book" className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-gray-700 transition-all duration-200 bg-white border-2 border-gray-100 rounded-full hover:bg-gray-50 hover:border-brand-200 hover:text-brand-600 shadow-sm hover:shadow-md">
+                   <Calendar className="mr-2 w-5 h-5" /> Book Consultation
+                </Link>
               </div>
               
               {/* Tech Stack Pills */}
@@ -190,6 +194,26 @@ const Home: React.FC = () => {
                 ))}
             </div>
           </div>
+      </section>
+
+      {/* Magic Editing Showcase (Before/After) */}
+      <section className="py-24 bg-black text-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+           <div className="text-center mb-12">
+              <span className="text-brand-400 font-bold tracking-wider uppercase text-sm">Magic Editing</span>
+              <h2 className="text-3xl md:text-5xl font-extrabold mt-2">Transforming Visuals</h2>
+              <p className="text-gray-400 mt-4 max-w-2xl mx-auto">See how I transform raw footage into cinematic masterpieces.</p>
+           </div>
+
+           <div className="max-w-4xl mx-auto">
+              <BeforeAfterSlider 
+                beforeImage="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80"
+                afterImage="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1600&q=80"
+                labelBefore="Standard"
+                labelAfter="Cinematic Grade"
+              />
+           </div>
+        </div>
       </section>
 
       {/* Resume Section (Experience & Education) */}
@@ -475,9 +499,14 @@ const Home: React.FC = () => {
             <p className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
               I'm currently available for freelance projects in SEO, Video Editing, and Marketing.
             </p>
-            <Link to="/contact" className="inline-flex items-center justify-center bg-white text-gray-900 px-10 py-5 rounded-full font-bold text-lg hover:bg-brand-500 hover:text-white hover:scale-105 transform transition-all duration-300 shadow-xl gap-2">
-              Let's Talk <ArrowRight size={20}/>
-            </Link>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link to="/contact" className="inline-flex items-center justify-center bg-white text-gray-900 px-10 py-5 rounded-full font-bold text-lg hover:bg-brand-500 hover:text-white hover:scale-105 transform transition-all duration-300 shadow-xl gap-2">
+                Let's Talk <ArrowRight size={20}/>
+              </Link>
+              <Link to="/book" className="inline-flex items-center justify-center bg-transparent border-2 border-gray-700 text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-gray-800 hover:border-gray-600 transform transition-all duration-300 gap-2">
+                <Calendar size={20}/> Book Call
+              </Link>
+            </div>
           </div>
         </div>
       </section>

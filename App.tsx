@@ -13,6 +13,7 @@ import Contact from './pages/Contact';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import BlogPostPage from './pages/BlogPostPage';
+import BookingPage from './pages/BookingPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 
@@ -33,6 +34,7 @@ const App: React.FC = () => {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/book" element={<BookingPage />} />
                 <Route path="/blog/:id" element={<BlogPostPage />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/login" element={<Login />} />
