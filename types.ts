@@ -125,8 +125,10 @@ export interface ThemeConfig {
     primary: string; // Brand Color
     accent: string;  // Secondary Color
   };
-  font: 'Outfit' | 'Inter' | 'Roboto' | 'Playfair Display';
+  font: 'Outfit' | 'Inter' | 'Roboto' | 'Playfair Display' | 'Poppins' | 'Montserrat' | 'Lato' | 'Open Sans';
   radius: '0px' | '0.5rem' | '1rem' | '9999px'; // Square, Small, Large, Pill
+  style: 'Default' | 'Minimal' | 'Brutalist' | 'Corporate' | 'Playful';
+  layout: 'Standard' | 'Wide' | 'Boxed';
   sections: {
     showHero: boolean;
     showServices: boolean;
@@ -136,8 +138,24 @@ export interface ThemeConfig {
     showBlogs: boolean;
     showContact: boolean;
   };
+  nav: {
+    showHome: boolean;
+    showPortfolio: boolean;
+    showShop: boolean;
+    showContact: boolean;
+    showBookCall: boolean;
+    showDashboard: boolean;
+  };
+  pages: {
+    portfolioEnabled: boolean;
+    shopEnabled: boolean;
+    blogEnabled: boolean;
+  };
   seo: {
     maintenanceMode: boolean; // If true, show maintenance screen
     preventIndexing: boolean; // If true, add noindex meta tag
   };
+  system: {
+    adminEnabled: boolean; // Master switch to enable/disable admin panel access
+  }
 }

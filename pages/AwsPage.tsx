@@ -1,14 +1,14 @@
 
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { Settings, Layout, Type, Palette, Lock, Save, Globe, Eye, EyeOff, ShieldAlert, CheckCircle } from 'lucide-react';
+import { Settings, Layout, Type, Palette, Lock, Save, Globe, Eye, EyeOff, ShieldAlert, CheckCircle, Navigation, Monitor, FileText, ToggleLeft, ToggleRight, Power } from 'lucide-react';
 import SeoHead from '../components/SeoHead';
 
 const AwsPage: React.FC = () => {
   const { settings, updateSettings, resetSettings } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'theme' | 'sections' | 'seo' | 'system'>('theme');
+  const [activeTab, setActiveTab] = useState<'theme' | 'layout' | 'nav' | 'seo' | 'system'>('theme');
 
   // Hardcoded Super Admin Password for AWS Panel
   const AWS_PASSWORD = "admin123";
@@ -28,6 +28,14 @@ const AwsPage: React.FC = () => {
 
   const handleSectionToggle = (key: keyof typeof settings.sections) => {
     updateSettings({ sections: { ...settings.sections, [key]: !settings.sections[key] } });
+  };
+
+  const handleNavToggle = (key: keyof typeof settings.nav) => {
+    updateSettings({ nav: { ...settings.nav, [key]: !settings.nav[key] } });
+  };
+
+  const handlePageToggle = (key: keyof typeof settings.pages) => {
+    updateSettings({ pages: { ...settings.pages, [key]: !settings.pages[key] } });
   };
 
   if (!isAuthenticated) {
@@ -79,7 +87,8 @@ const AwsPage: React.FC = () => {
             <nav className="space-y-2">
               {[
                 { id: 'theme', icon: Palette, label: 'Theme & Style' },
-                { id: 'sections', icon: Layout, label: 'Page Layout' },
+                { id: 'layout', icon: Layout, label: 'Layout & Pages' },
+                { id: 'nav', icon: Navigation, label: 'Navigation' },
                 { id: 'seo', icon: Globe, label: 'SEO & Meta' },
                 { id: 'system', icon: ShieldAlert, label: 'System Control' },
               ].map((item) => (
@@ -131,12 +140,10 @@ const AwsPage: React.FC = () => {
                    </div>
                 </div>
 
-                <hr className="my-8 border-gray-100"/>
-
                 <div className="mb-8">
                    <label className="block text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><Type size={18}/> Typography (Font Family)</label>
                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {['Outfit', 'Inter', 'Roboto', 'Playfair Display'].map(font => (
+                      {['Outfit', 'Inter', 'Roboto', 'Playfair Display', 'Poppins', 'Montserrat', 'Lato', 'Open Sans'].map(font => (
                          <button
                            key={font}
                            onClick={() => updateSettings({ font: font as any })}
@@ -150,48 +157,116 @@ const AwsPage: React.FC = () => {
                    </div>
                 </div>
 
-                <div>
-                   <label className="block text-sm font-bold text-gray-700 mb-4">Corner Radius</label>
-                   <div className="grid grid-cols-4 gap-4">
-                      {[
-                        { label: 'Square', val: '0px', class: 'rounded-none' },
-                        { label: 'Small', val: '0.5rem', class: 'rounded-lg' },
-                        { label: 'Modern', val: '1rem', class: 'rounded-2xl' },
-                        { label: 'Round', val: '9999px', class: 'rounded-full' },
-                      ].map((r) => (
-                         <button
-                           key={r.label}
-                           onClick={() => updateSettings({ radius: r.val as any })}
-                           className={`p-3 border-2 transition flex flex-col items-center gap-2 ${settings.radius === r.val ? 'border-brand-600 bg-brand-50' : 'border-gray-100'}`}
-                           style={{ borderRadius: r.val === '9999px' ? '1rem' : '0.5rem' }} // Just for button look
-                         >
-                            <div className={`w-8 h-8 bg-gray-200 border border-gray-400 ${r.class}`}></div>
-                            <span className="text-xs font-bold">{r.label}</span>
-                         </button>
-                      ))}
-                   </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-4">Corner Radius</label>
+                        <div className="grid grid-cols-4 gap-2">
+                            {[
+                                { label: 'Square', val: '0px', class: 'rounded-none' },
+                                { label: 'Small', val: '0.5rem', class: 'rounded-lg' },
+                                { label: 'Modern', val: '1rem', class: 'rounded-2xl' },
+                                { label: 'Pill', val: '9999px', class: 'rounded-full' },
+                            ].map((r) => (
+                                <button
+                                key={r.label}
+                                onClick={() => updateSettings({ radius: r.val as any })}
+                                className={`p-2 border-2 transition flex flex-col items-center gap-1 ${settings.radius === r.val ? 'border-brand-600 bg-brand-50' : 'border-gray-100'}`}
+                                >
+                                    <div className={`w-6 h-6 bg-gray-200 border border-gray-400 ${r.class}`}></div>
+                                    <span className="text-[10px] font-bold">{r.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                         <label className="block text-sm font-bold text-gray-700 mb-4">Theme Style</label>
+                         <div className="grid grid-cols-2 gap-2">
+                            {['Default', 'Minimal', 'Brutalist', 'Corporate', 'Playful'].map(style => (
+                                <button 
+                                    key={style}
+                                    onClick={() => updateSettings({ style: style as any })}
+                                    className={`p-2 text-sm font-bold rounded-lg border-2 ${settings.style === style ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-gray-100'}`}
+                                >
+                                    {style}
+                                </button>
+                            ))}
+                         </div>
+                    </div>
                 </div>
               </div>
             )}
 
             {/* Layout Settings */}
-            {activeTab === 'sections' && (
+            {activeTab === 'layout' && (
               <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 animate-in fade-in">
-                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><Layout/> Homepage Sections</h2>
-                 <p className="text-gray-500 mb-8">Toggle visibility of specific sections on the Home Page.</p>
+                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><Layout/> Layout Configuration</h2>
                  
-                 <div className="space-y-4">
+                 <div className="mb-8">
+                    <label className="block text-sm font-bold text-gray-700 mb-4">Site Width</label>
+                    <div className="flex gap-4">
+                        {['Standard', 'Wide', 'Boxed'].map(l => (
+                            <button 
+                                key={l}
+                                onClick={() => updateSettings({ layout: l as any })}
+                                className={`px-6 py-3 rounded-xl border-2 font-bold ${settings.layout === l ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-gray-200'}`}
+                            >
+                                {l}
+                            </button>
+                        ))}
+                    </div>
+                 </div>
+
+                 <hr className="my-8 border-gray-100"/>
+                 
+                 <h3 className="font-bold text-gray-900 mb-4">Homepage Sections</h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.entries(settings.sections).map(([key, isVisible]) => (
                        <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                          <div>
-                             <h4 className="font-bold text-gray-900 capitalize">{key.replace('show', '')} Section</h4>
-                             <p className="text-xs text-gray-500">{isVisible ? 'Currently Visible on Homepage' : 'Hidden from Homepage'}</p>
-                          </div>
+                          <span className="font-bold text-gray-700 capitalize">{key.replace('show', '')}</span>
                           <button 
                              onClick={() => handleSectionToggle(key as any)}
-                             className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${isVisible ? 'bg-brand-600' : 'bg-gray-300'}`}
+                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isVisible ? 'bg-green-500' : 'bg-gray-300'}`}
                           >
-                             <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition ${isVisible ? 'translate-x-7' : 'translate-x-1'}`}/>
+                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${isVisible ? 'translate-x-6' : 'translate-x-1'}`}/>
+                          </button>
+                       </div>
+                    ))}
+                 </div>
+
+                 <hr className="my-8 border-gray-100"/>
+
+                 <h3 className="font-bold text-gray-900 mb-4">Page Visibility (Public)</h3>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Object.entries(settings.pages || {}).map(([key, isVisible]) => (
+                       <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                          <span className="font-bold text-gray-700 capitalize">{key.replace('Enabled', '')} Page</span>
+                          <button 
+                             onClick={() => handlePageToggle(key as any)}
+                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isVisible ? 'bg-blue-500' : 'bg-gray-300'}`}
+                          >
+                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${isVisible ? 'translate-x-6' : 'translate-x-1'}`}/>
+                          </button>
+                       </div>
+                    ))}
+                 </div>
+              </div>
+            )}
+
+            {/* Navigation Settings */}
+            {activeTab === 'nav' && (
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 animate-in fade-in">
+                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><Navigation/> Navigation Menu</h2>
+                 <p className="text-gray-500 mb-8">Show or hide specific links in the main navigation bar.</p>
+
+                 <div className="space-y-4">
+                    {Object.entries(settings.nav || {}).map(([key, isVisible]) => (
+                       <div key={key} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl">
+                          <span className="font-bold text-gray-900 capitalize">{key.replace('show', '')} Link</span>
+                          <button 
+                             onClick={() => handleNavToggle(key as any)}
+                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isVisible ? 'bg-brand-600' : 'bg-gray-300'}`}
+                          >
+                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${isVisible ? 'translate-x-6' : 'translate-x-1'}`}/>
                           </button>
                        </div>
                     ))}
@@ -215,7 +290,7 @@ const AwsPage: React.FC = () => {
                               {settings.seo.maintenanceMode ? 'Active' : 'Disabled'}
                            </button>
                         </div>
-                        <p className="text-sm text-yellow-700">If active, visitors will see a "Under Maintenance" page. Admins can still access /aws.</p>
+                        <p className="text-sm text-yellow-700">If active, visitors will see a "Under Maintenance" page. Admins can bypass via ?access=admin123.</p>
                      </div>
 
                      <div className="p-6 border border-blue-200 bg-blue-50 rounded-2xl">
@@ -239,24 +314,20 @@ const AwsPage: React.FC = () => {
                <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 animate-in fade-in text-center">
                   <ShieldAlert size={64} className="mx-auto text-brand-600 mb-4"/>
                   <h2 className="text-2xl font-bold text-gray-900">System Status</h2>
-                  <p className="text-gray-500 mb-8">Site Controller V1.0 - All Systems Operational</p>
+                  <p className="text-gray-500 mb-8">Site Controller V2.1</p>
                   
-                  <div className="grid grid-cols-2 gap-4 text-left max-w-md mx-auto">
-                     <div className="p-4 bg-gray-50 rounded-xl">
-                        <p className="text-xs text-gray-500 uppercase font-bold">Version</p>
-                        <p className="font-mono text-gray-900">1.2.0 (Stable)</p>
-                     </div>
-                     <div className="p-4 bg-gray-50 rounded-xl">
-                        <p className="text-xs text-gray-500 uppercase font-bold">Admin</p>
-                        <p className="font-mono text-gray-900">Root Access</p>
-                     </div>
-                     <div className="p-4 bg-gray-50 rounded-xl">
-                        <p className="text-xs text-gray-500 uppercase font-bold">Database</p>
-                        <p className="font-mono text-green-600">Connected</p>
-                     </div>
-                     <div className="p-4 bg-gray-50 rounded-xl">
-                        <p className="text-xs text-gray-500 uppercase font-bold">Last Backup</p>
-                        <p className="font-mono text-gray-900">Auto (Daily)</p>
+                  <div className="p-6 bg-red-50 border border-red-100 rounded-2xl mb-8">
+                     <div className="flex justify-between items-center">
+                        <div className="text-left">
+                           <h4 className="font-bold text-red-900 flex items-center gap-2"><Power size={18}/> Disable Admin Panel</h4>
+                           <p className="text-xs text-red-700">Completely lock access to /admin for everyone.</p>
+                        </div>
+                        <button 
+                           onClick={() => updateSettings({ system: { ...settings.system, adminEnabled: !settings.system?.adminEnabled } })}
+                           className={`px-4 py-2 rounded-lg font-bold text-sm ${settings.system?.adminEnabled ? 'bg-white text-red-600 border border-red-200' : 'bg-red-600 text-white'}`}
+                        >
+                           {settings.system?.adminEnabled ? 'Lock Admin' : 'Unlock Admin'}
+                        </button>
                      </div>
                   </div>
                </div>

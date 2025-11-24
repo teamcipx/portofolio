@@ -3,13 +3,14 @@ import React, { useEffect } from 'react';
 interface SeoProps {
   title: string;
   description: string;
+  keywords?: string; // Added Keywords support
   image?: string;
   url?: string;
   type?: 'website' | 'article' | 'product' | 'profile';
   schema?: string; // JSON-LD String
 }
 
-const SeoHead: React.FC<SeoProps> = ({ title, description, image, url, type = 'website', schema }) => {
+const SeoHead: React.FC<SeoProps> = ({ title, description, keywords, image, url, type = 'website', schema }) => {
   useEffect(() => {
     // Update Title
     document.title = title;
@@ -38,6 +39,11 @@ const SeoHead: React.FC<SeoProps> = ({ title, description, image, url, type = 'w
 
     // Basic Meta
     updateMeta('description', description);
+    
+    // Keywords Meta
+    if (keywords) {
+      updateMeta('keywords', keywords);
+    }
     
     // Open Graph
     updateOgMeta('og:type', type);
@@ -75,16 +81,11 @@ const SeoHead: React.FC<SeoProps> = ({ title, description, image, url, type = 'w
     // Cleanup function
     return () => {
       if (script && script.parentNode) {
-        // We don't necessarily want to remove it immediately to avoid flickering, 
-        // but strictly speaking for SPA, we should clean up or replace.
-        // For this implementation, we let the next page overwrite it or remove it.
-        // If the next page doesn't have schema, we should remove this one.
-        // However, to be safe:
         script.remove();
       }
     };
 
-  }, [title, description, image, url, type, schema]);
+  }, [title, description, keywords, image, url, type, schema]);
 
   return null;
 };

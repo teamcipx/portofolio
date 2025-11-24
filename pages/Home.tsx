@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Download, TrendingUp, Video, Megaphone, Palette, Play, ChevronLeft, ChevronRight, Quote, Calendar, Clock, Star, Briefcase, GraduationCap } from 'lucide-react';
 import * as ReactRouterDOM from 'react-router-dom';
@@ -93,8 +92,9 @@ const Home: React.FC = () => {
   return (
     <div className="animate-in fade-in duration-500 overflow-hidden">
       <SeoHead 
-        title="Ali Hossn | Digital Marketer & Video Editor"
-        description="Portfolio of Ali Hossn - Expert in SEO, Digital Marketing, Graphic Design and Video Editing. Based in Sherpur, Bangladesh."
+        title="Ali Hossn | Digital Marketer & Video Editor Bangladesh"
+        description="Expert Digital Marketer and Video Editor in Bangladesh. Services include SEO, Social Media Ads, Youtube Video Editing and Branding."
+        keywords="ali hossn, digital marketer bangladesh, video editor sherpur, seo expert bangladesh, youtube video editor, social media marketing, freelance video editor"
         image={profilePic}
       />
       

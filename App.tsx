@@ -18,41 +18,58 @@ import AwsPage from './pages/AwsPage';
 import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
-const { HashRouter: Router, Routes, Route } = ReactRouterDOM;
+const { HashRouter: Router, Routes, Route, Navigate } = ReactRouterDOM;
+
+// Wrapper to check if Admin is enabled globally
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { settings } = useTheme();
+  // If adminEnabled is explicitly false, redirect to home
+  // Note: system might be undefined in legacy settings, default to true
+  if (settings.system?.adminEnabled === false) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+};
+
+const AppContent: React.FC = () => {
+    return (
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/work/:id" element={<ProjectDetailsPage />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/book" element={<BookingPage />} />
+              <Route path="/blog/:id" element={<BlogPostPage />} />
+              <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+              <Route path="/aws" element={<AwsPage />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </main>
+          <Footer />
+          <ChatWidget />
+        </div>
+    );
+};
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <CartProvider>
-          <Router>
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-grow">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/portfolio" element={<Portfolio />} />
-                  <Route path="/work/:id" element={<ProjectDetailsPage />} />
-                  <Route path="/shop" element={<Shop />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/book" element={<BookingPage />} />
-                  <Route path="/blog/:id" element={<BlogPostPage />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/aws" element={<AwsPage />} />
-                  <Route path="/login" element={<Login />} />
-                </Routes>
-              </main>
-              <Footer />
-              <ChatWidget />
-            </div>
-          </Router>
-        </CartProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <Router>
+        <ThemeProvider>
+        <AuthProvider>
+            <CartProvider>
+                <AppContent />
+            </CartProvider>
+        </AuthProvider>
+        </ThemeProvider>
+    </Router>
   );
 };
 
