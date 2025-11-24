@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save, CreditCard, CheckCircle, XCircle, Star, PieChart, TrendingUp, Menu, Calendar } from 'lucide-react';
+import { Upload, Plus, X, Trash2, MessageSquare, Briefcase, ShoppingBag, BookOpen, Loader2, User, Reply, Settings, Save, CreditCard, CheckCircle, XCircle, Star, PieChart, TrendingUp, Menu, Calendar, Image as ImageIcon } from 'lucide-react';
 import { uploadImageToImgBB } from '../services/imgbbService';
 import { 
   addProject, addProduct, addBlog, getMessages, getProjects, deleteProject, 
@@ -32,13 +32,16 @@ const Admin: React.FC = () => {
   // Form States
   const [uploading, setUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const [albumUrls, setAlbumUrls] = useState<string[]>([]); // For Project Album
   
   // Chat / Message Logic
   const [selectedUserEmail, setSelectedUserEmail] = useState<string | null>(null);
   const [chatReply, setChatReply] = useState('');
   
   // Generic Forms
-  const [projectForm, setProjectForm] = useState({ title: '', category: 'Branding', description: '' });
+  const [projectForm, setProjectForm] = useState({ 
+      title: '', category: 'Branding', description: '', client: '', liveLink: '', tools: '' 
+  });
   const [productForm, setProductForm] = useState({ title: '', type: 'Asset', price: '', description: '' });
   const [blogForm, setBlogForm] = useState({ title: '', category: 'Design', excerpt: '', content: '', readTime: '5 min read' });
   const [testimonialForm, setTestimonialForm] = useState({ name: '', role: '', company: '', content: '' });
@@ -77,11 +80,17 @@ const Admin: React.FC = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, isAlbum: boolean = false) => {
     if (e.target.files && e.target.files[0]) {
       setUploading(true);
       const url = await uploadImageToImgBB(e.target.files[0]);
-      if (url) setUploadedUrl(url);
+      if (url) {
+          if (isAlbum) {
+              setAlbumUrls(prev => [...prev, url]);
+          } else {
+              setUploadedUrl(url);
+          }
+      }
       setUploading(false);
     }
   };
@@ -89,10 +98,19 @@ const Admin: React.FC = () => {
   // Handlers
   const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!uploadedUrl) return alert("Upload image first");
-    await addProject({ ...projectForm, imageUrl: uploadedUrl } as any);
+    if(!uploadedUrl) return alert("Upload Main image first");
+    
+    await addProject({ 
+        ...projectForm, 
+        imageUrl: uploadedUrl, 
+        images: albumUrls,
+        tools: projectForm.tools.split(',').map(t => t.trim()).filter(t => t),
+        date: new Date().toLocaleDateString()
+    } as any);
+    
     setUploadedUrl(null);
-    setProjectForm({ title: '', category: 'Branding', description: '' });
+    setAlbumUrls([]);
+    setProjectForm({ title: '', category: 'Branding', description: '', client: '', liveLink: '', tools: '' });
     refreshData();
     alert("Project Added");
   };
@@ -176,18 +194,18 @@ const Admin: React.FC = () => {
     }, []);
 
   // Components
-  const FileUploader = () => (
-    <div className="relative border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors mb-4">
-        {uploadedUrl ? (
+  const FileUploader = ({ isAlbum = false, label = "Upload Image" }) => (
+    <div className={`relative border-2 border-dashed border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors mb-4 ${isAlbum ? 'bg-blue-50/50' : ''}`}>
+        {!isAlbum && uploadedUrl ? (
             <div className="relative w-full">
                 <img src={uploadedUrl} alt="Preview" className="w-full h-32 object-cover rounded-lg" />
                 <button type="button" onClick={() => setUploadedUrl(null)} className="absolute top-1 right-1 bg-white p-1 rounded-full shadow text-red-500"><X size={14}/></button>
             </div>
         ) : (
             <>
-                <input type="file" accept="image/*" onChange={handleFileChange} disabled={uploading} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                {uploading ? <Loader2 className="animate-spin text-brand-500"/> : <Upload className="text-gray-400 mb-2"/>}
-                <span className="text-xs text-gray-500">Upload Image</span>
+                <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, isAlbum)} disabled={uploading} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                {uploading ? <Loader2 className="animate-spin text-brand-500"/> : (isAlbum ? <Plus className="text-blue-500 mb-1"/> : <Upload className="text-gray-400 mb-1"/>)}
+                <span className="text-xs text-gray-500 font-bold">{label}</span>
             </>
         )}
     </div>
@@ -522,16 +540,36 @@ const Admin: React.FC = () => {
                 <div className="lg:col-span-1">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
                         <h2 className="text-xl font-bold mb-6 capitalize">Add {activeTab.slice(0, -1)}</h2>
-                        {/* Forms Logic */}
+                        
+                        {/* PROJECT FORM (Album System) */}
                         {activeTab === 'projects' && (
                             <form onSubmit={handleAddProject} className="space-y-4">
-                                <FileUploader />
-                                <input type="text" placeholder="Title" required className="w-full p-3 bg-gray-50 rounded-lg" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} />
-                                <select className="w-full p-3 bg-gray-50 rounded-lg" value={projectForm.category} onChange={e => setProjectForm({...projectForm, category: e.target.value})}><option>Branding</option><option>Web Design</option></select>
-                                <textarea placeholder="Description" required className="w-full p-3 bg-gray-50 rounded-lg" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} />
-                                <button type="submit" disabled={!uploadedUrl} className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold">Publish</button>
+                                <FileUploader label="Upload Main Thumbnail"/>
+                                <input type="text" placeholder="Project Title" required className="w-full p-3 bg-gray-50 rounded-lg" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} />
+                                <select className="w-full p-3 bg-gray-50 rounded-lg" value={projectForm.category} onChange={e => setProjectForm({...projectForm, category: e.target.value})}><option>Branding</option><option>Web Design</option><option>Video Editing</option><option>Social Media</option></select>
+                                <textarea placeholder="Full Description / Case Study" required className="w-full p-3 bg-gray-50 rounded-lg h-32" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} />
+                                
+                                <input type="text" placeholder="Client Name" className="w-full p-3 bg-gray-50 rounded-lg" value={projectForm.client} onChange={e => setProjectForm({...projectForm, client: e.target.value})} />
+                                <input type="text" placeholder="Tools (comma separated)" className="w-full p-3 bg-gray-50 rounded-lg" value={projectForm.tools} onChange={e => setProjectForm({...projectForm, tools: e.target.value})} />
+                                <input type="text" placeholder="Live Link (URL)" className="w-full p-3 bg-gray-50 rounded-lg" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
+                                
+                                {/* Album Uploader */}
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 block mb-2">Gallery Images (Album)</label>
+                                    <div className="grid grid-cols-3 gap-2 mb-2">
+                                        {albumUrls.map((url, idx) => (
+                                            <div key={idx} className="relative aspect-square">
+                                                <img src={url} className="w-full h-full object-cover rounded-lg"/>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <FileUploader isAlbum={true} label="Add Image to Album" />
+                                </div>
+
+                                <button type="submit" disabled={!uploadedUrl} className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold">Publish Work</button>
                             </form>
                         )}
+
                         {activeTab === 'blogs' && (
                             <form onSubmit={handleAddBlog} className="space-y-4">
                                 <FileUploader />
@@ -555,7 +593,11 @@ const Admin: React.FC = () => {
                    {activeTab === 'projects' && projects.map(p => (
                       <div key={p.id} className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100">
                          <img src={p.imageUrl} className="w-16 h-16 rounded-lg object-cover"/>
-                         <div className="flex-1"><h4 className="font-bold">{p.title}</h4><p className="text-xs">{p.category}</p></div>
+                         <div className="flex-1">
+                            <h4 className="font-bold">{p.title}</h4>
+                            <p className="text-xs text-gray-500">{p.category}</p>
+                            {p.images && p.images.length > 0 && <span className="text-xs bg-blue-100 text-blue-600 px-1 rounded ml-2">+{p.images.length} images</span>}
+                         </div>
                          <button onClick={() => handleDelete(p.id, 'project')} className="text-red-400 hover:bg-red-50 p-2 rounded"><Trash2 size={18}/></button>
                       </div>
                    ))}

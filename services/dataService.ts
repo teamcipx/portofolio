@@ -20,6 +20,18 @@ export const fetchData = async <T>(collectionName: string): Promise<T[]> => {
 
 // --- Projects ---
 export const getProjects = () => fetchData<Project>('projects');
+export const getProjectById = async (id: string): Promise<Project | null> => {
+  try {
+    const doc = await db.collection('projects').doc(id).get();
+    if (doc.exists) {
+      return { id: doc.id, ...doc.data() } as Project;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching project", error);
+    return null;
+  }
+};
 export const addProject = (data: Omit<Project, 'id'>) => db.collection('projects').add(data);
 export const deleteProject = (id: string) => db.collection('projects').doc(id).delete();
 

@@ -15,6 +15,7 @@ import Login from './pages/Login';
 import BlogPostPage from './pages/BlogPostPage';
 import BookingPage from './pages/BookingPage';
 import AwsPage from './pages/AwsPage';
+import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -33,6 +34,7 @@ const App: React.FC = () => {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/work/:id" element={<ProjectDetailsPage />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/profile" element={<ProfilePage />} />

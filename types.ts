@@ -2,9 +2,14 @@
 export interface Project {
   id: string;
   title: string;
-  category: 'Branding' | 'Web Design' | 'Illustration' | 'Social Media';
-  imageUrl: string;
+  category: 'Branding' | 'Web Design' | 'Illustration' | 'Social Media' | 'Video Editing';
+  imageUrl: string; // Main Thumbnail
+  images?: string[]; // Album / Gallery
   description: string;
+  client?: string;
+  date?: string;
+  tools?: string[]; // e.g. ["Photoshop", "Figma"]
+  liveLink?: string;
 }
 
 export interface Product {

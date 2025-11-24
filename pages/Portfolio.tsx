@@ -1,8 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import { getProjects } from '../services/dataService';
 import { Project } from '../types';
-import { Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon, ArrowRight } from 'lucide-react';
 import SeoHead from '../components/SeoHead';
+import * as ReactRouterDOM from 'react-router-dom';
+
+const { Link } = ReactRouterDOM;
 
 const Portfolio: React.FC = () => {
   const [filter, setFilter] = useState('All');
@@ -81,20 +85,28 @@ const Portfolio: React.FC = () => {
         ) : filteredProjects.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => (
-                <div key={project.id} className="group cursor-pointer">
-                <div className="relative overflow-hidden rounded-xl shadow-sm mb-4 aspect-[4/3]">
-                    <img 
-                    src={project.imageUrl} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition duration-700"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
-                    <span className="text-white border border-white px-6 py-2 rounded-full font-medium">View Details</span>
+                <Link to={`/work/${project.id}`} key={project.id} className="group cursor-pointer block">
+                    <div className="relative overflow-hidden rounded-2xl shadow-sm mb-4 aspect-[4/3] border border-gray-100">
+                        <img 
+                        src={project.imageUrl} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover transform group-hover:scale-110 transition duration-700"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <span className="text-white border border-white px-6 py-2 rounded-full font-bold flex items-center gap-2">
+                                View Details <ArrowRight size={16}/>
+                            </span>
+                        </div>
+                        {/* Multiple Images Badge */}
+                        {project.images && project.images.length > 0 && (
+                            <div className="absolute top-3 right-3 bg-black/50 backdrop-blur px-2 py-1 rounded-md text-white text-xs font-bold flex items-center gap-1">
+                                <ImageIcon size={12}/> {project.images.length + 1}
+                            </div>
+                        )}
                     </div>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 group-hover:text-brand-600 transition">{project.title}</h3>
-                <p className="text-sm text-gray-500">{project.category}</p>
-                </div>
+                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-brand-600 transition">{project.title}</h3>
+                    <p className="text-sm text-gray-500 mt-1">{project.category}</p>
+                </Link>
             ))}
             </div>
         ) : (
