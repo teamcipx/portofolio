@@ -1,6 +1,6 @@
 
 import { db } from './firebase';
-import { Project, Product, BlogPost, Message, Order, Testimonial, Booking } from '../types';
+import { Project, Product, BlogPost, Message, Order, Testimonial, Booking, ThemeConfig } from '../types';
 import firebase from 'firebase/compat/app';
 
 // Generic Fetch Function (Strictly Firebase)
@@ -163,4 +163,19 @@ export const getProfileSettings = async () => {
 
 export const updateProfileSettings = (data: any) => {
   return db.collection('settings').doc('profile').set(data, { merge: true });
+};
+
+// --- AWS / Global Theme Settings ---
+export const getThemeSettings = async (): Promise<ThemeConfig | null> => {
+  try {
+    const doc = await db.collection('settings').doc('theme').get();
+    return doc.exists ? (doc.data() as ThemeConfig) : null;
+  } catch (error) {
+    console.error("Error fetching theme settings", error);
+    return null;
+  }
+};
+
+export const saveThemeSettings = (settings: ThemeConfig) => {
+  return db.collection('settings').doc('theme').set(settings);
 };

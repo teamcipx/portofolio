@@ -19,6 +19,7 @@ import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { Loader2 } from 'lucide-react';
 
 const { HashRouter: Router, Routes, Route, Navigate } = ReactRouterDOM;
 
@@ -34,6 +35,16 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const AppContent: React.FC = () => {
+    const { isLoading } = useTheme();
+
+    if (isLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <Loader2 className="w-10 h-10 text-brand-600 animate-spin" />
+        </div>
+      );
+    }
+
     return (
         <div className="flex flex-col min-h-screen">
           <Navbar />

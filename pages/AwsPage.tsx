@@ -1,14 +1,14 @@
 
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { Settings, Layout, Type, Palette, Lock, Save, Globe, Eye, EyeOff, ShieldAlert, CheckCircle, Navigation, Monitor, FileText, ToggleLeft, ToggleRight, Power } from 'lucide-react';
+import { Settings, Layout, Type, Palette, Lock, Save, Globe, Eye, EyeOff, ShieldAlert, CheckCircle, Navigation, Monitor, FileText, ToggleLeft, ToggleRight, Power, Zap, Star, Briefcase, MousePointer2 } from 'lucide-react';
 import SeoHead from '../components/SeoHead';
 
 const AwsPage: React.FC = () => {
-  const { settings, updateSettings, resetSettings } = useTheme();
+  const { settings, updateSettings, applyPreset, resetSettings } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'theme' | 'layout' | 'nav' | 'seo' | 'system'>('theme');
+  const [activeTab, setActiveTab] = useState<'presets' | 'theme' | 'layout' | 'nav' | 'seo' | 'system'>('presets');
 
   // Hardcoded Super Admin Password for AWS Panel
   const AWS_PASSWORD = "admin123";
@@ -72,8 +72,10 @@ const AwsPage: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between mb-8">
            <div>
-              <h1 className="text-4xl font-extrabold text-gray-900">AWS Panel</h1>
-              <p className="text-gray-500">System Configuration & Layout Engine</p>
+              <h1 className="text-4xl font-extrabold text-gray-900 flex items-center gap-3">
+                 AWS Panel <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full border border-green-200 uppercase tracking-widest">Online</span>
+              </h1>
+              <p className="text-gray-500">System Configuration & Layout Engine (v3.0)</p>
            </div>
            <div className="flex gap-3">
               <button onClick={() => window.open('/', '_blank')} className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-50">View Site</button>
@@ -86,7 +88,8 @@ const AwsPage: React.FC = () => {
           <div className="bg-white p-4 rounded-3xl border border-gray-200 shadow-sm h-fit">
             <nav className="space-y-2">
               {[
-                { id: 'theme', icon: Palette, label: 'Theme & Style' },
+                { id: 'presets', icon: Star, label: 'Theme Presets' },
+                { id: 'theme', icon: Palette, label: 'Colors & Fonts' },
                 { id: 'layout', icon: Layout, label: 'Layout & Pages' },
                 { id: 'nav', icon: Navigation, label: 'Navigation' },
                 { id: 'seo', icon: Globe, label: 'SEO & Meta' },
@@ -108,6 +111,56 @@ const AwsPage: React.FC = () => {
           {/* Content Area */}
           <div className="lg:col-span-3 space-y-6">
             
+            {/* PRESETS TAB */}
+            {activeTab === 'presets' && (
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 animate-in fade-in">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><Star className="text-yellow-500"/> One-Click Themes</h2>
+                <p className="text-gray-500 mb-8">Select a pre-designed theme to instantly transform your website's look and feel.</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   {/* Tech Preset */}
+                   <button 
+                      onClick={() => applyPreset('Tech')}
+                      className={`relative p-6 rounded-2xl border-2 text-left transition hover:scale-[1.02] ${settings.preset === 'Tech' ? 'border-cyan-500 bg-cyan-50' : 'border-gray-200 hover:border-cyan-200'}`}
+                   >
+                      <div className="w-12 h-12 bg-cyan-500 rounded text-white flex items-center justify-center mb-4"><Monitor/></div>
+                      <h3 className="text-xl font-bold text-gray-900">Tech / Dev</h3>
+                      <p className="text-sm text-gray-500 mt-2">Cyberpunk cyan tones, Roboto Mono fonts, and sharp, brutalist edges.</p>
+                   </button>
+
+                   {/* Modern Preset */}
+                   <button 
+                      onClick={() => applyPreset('Modern')}
+                      className={`relative p-6 rounded-2xl border-2 text-left transition hover:scale-[1.02] ${settings.preset === 'Modern' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-200'}`}
+                   >
+                      <div className="w-12 h-12 bg-blue-500 rounded-xl text-white flex items-center justify-center mb-4"><Zap/></div>
+                      <h3 className="text-xl font-bold text-gray-900">Modern SaaS</h3>
+                      <p className="text-sm text-gray-500 mt-2">Clean Inter font, rounded corners, and trustworthy blue accents.</p>
+                   </button>
+
+                   {/* Stylish Preset */}
+                   <button 
+                      onClick={() => applyPreset('Stylish')}
+                      className={`relative p-6 rounded-2xl border-2 text-left transition hover:scale-[1.02] ${settings.preset === 'Stylish' ? 'border-pink-500 bg-pink-50' : 'border-gray-200 hover:border-pink-200'}`}
+                   >
+                      <div className="w-12 h-12 bg-pink-500 rounded-full text-white flex items-center justify-center mb-4"><Star/></div>
+                      <h3 className="text-xl font-bold text-gray-900">Stylish / Creative</h3>
+                      <p className="text-sm text-gray-500 mt-2">Vibrant pinks, Outline font, large rounded corners for a playful feel.</p>
+                   </button>
+
+                   {/* Premium Preset */}
+                   <button 
+                      onClick={() => applyPreset('Premium')}
+                      className={`relative p-6 rounded-2xl border-2 text-left transition hover:scale-[1.02] ${settings.preset === 'Premium' ? 'border-yellow-600 bg-yellow-50' : 'border-gray-200 hover:border-yellow-200'}`}
+                   >
+                      <div className="w-12 h-12 bg-gray-900 rounded-none text-yellow-500 flex items-center justify-center mb-4"><Briefcase/></div>
+                      <h3 className="text-xl font-bold text-gray-900">Premium / Corp</h3>
+                      <p className="text-sm text-gray-500 mt-2">Gold & Black, Montserrat font, minimal spacing, and boxed layout.</p>
+                   </button>
+                </div>
+              </div>
+            )}
+
             {/* Theme Settings */}
             {activeTab === 'theme' && (
               <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 animate-in fade-in">
@@ -314,7 +367,7 @@ const AwsPage: React.FC = () => {
                <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 animate-in fade-in text-center">
                   <ShieldAlert size={64} className="mx-auto text-brand-600 mb-4"/>
                   <h2 className="text-2xl font-bold text-gray-900">System Status</h2>
-                  <p className="text-gray-500 mb-8">Site Controller V2.1</p>
+                  <p className="text-gray-500 mb-8">Site Controller V3.0 (Cloud Connected)</p>
                   
                   <div className="p-6 bg-red-50 border border-red-100 rounded-2xl mb-8">
                      <div className="flex justify-between items-center">

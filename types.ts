@@ -121,6 +121,7 @@ export interface Booking {
 
 // AWS / Theme Settings Interface
 export interface ThemeConfig {
+  preset: 'Custom' | 'Tech' | 'Modern' | 'Stylish' | 'Premium'; // New Preset Field
   colors: {
     primary: string; // Brand Color
     accent: string;  // Secondary Color

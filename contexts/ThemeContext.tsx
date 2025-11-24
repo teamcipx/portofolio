@@ -2,16 +2,20 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ThemeConfig } from '../types';
 import * as ReactRouterDOM from 'react-router-dom';
+import { getThemeSettings, saveThemeSettings } from '../services/dataService';
 
 const { useLocation, useNavigate } = ReactRouterDOM;
 
 interface ThemeContextType {
   settings: ThemeConfig;
   updateSettings: (newSettings: Partial<ThemeConfig>) => void;
+  applyPreset: (preset: ThemeConfig['preset']) => void;
   resetSettings: () => void;
+  isLoading: boolean;
 }
 
 const DEFAULT_SETTINGS: ThemeConfig = {
+  preset: 'Custom',
   colors: {
     primary: '#d946ef', // Fuchsia-500
     accent: '#8b5cf6',  // Violet-500
@@ -54,17 +58,23 @@ const DEFAULT_SETTINGS: ThemeConfig = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [settings, setSettings] = useState<ThemeConfig>(() => {
-    try {
-      const saved = localStorage.getItem('aws-settings');
-      return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
-    } catch {
-      return DEFAULT_SETTINGS;
-    }
-  });
+  const [settings, setSettings] = useState<ThemeConfig>(DEFAULT_SETTINGS);
+  const [isLoading, setIsLoading] = useState(true);
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Load from Firebase on Mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      const cloudSettings = await getThemeSettings();
+      if (cloudSettings) {
+        setSettings({ ...DEFAULT_SETTINGS, ...cloudSettings });
+      }
+      setIsLoading(false);
+    };
+    loadSettings();
+  }, []);
 
   // Apply Changes to DOM
   useEffect(() => {
@@ -87,12 +97,13 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     } else if (settings.style === 'Brutalist') {
         root.style.setProperty('--radius-global', '0px');
         document.body.style.border = '4px solid black';
+    } else if (settings.style === 'Corporate') {
+        root.style.setProperty('--radius-global', '4px');
+        document.body.style.letterSpacing = '-0.01em';
     } else {
         document.body.style.border = 'none';
+        document.body.style.letterSpacing = 'normal';
     }
-
-    // 5. Save to LocalStorage
-    localStorage.setItem('aws-settings', JSON.stringify(settings));
 
   }, [settings]);
 
@@ -104,11 +115,65 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, [location, settings, navigate]);
 
   const updateSettings = (newSettings: Partial<ThemeConfig>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+    const updated = { ...settings, ...newSettings, preset: 'Custom' as const };
+    setSettings(updated);
+    saveThemeSettings(updated); // Sync to Cloud
+  };
+
+  const applyPreset = (preset: ThemeConfig['preset']) => {
+    let presetConfig: Partial<ThemeConfig> = { preset };
+
+    switch (preset) {
+      case 'Tech':
+        presetConfig = {
+          ...presetConfig,
+          colors: { primary: '#0ea5e9', accent: '#10b981' }, // Cyan & Emerald
+          font: 'Roboto',
+          radius: '0px',
+          style: 'Brutalist',
+          layout: 'Wide'
+        };
+        break;
+      case 'Modern':
+        presetConfig = {
+          ...presetConfig,
+          colors: { primary: '#3b82f6', accent: '#6366f1' }, // Blue & Indigo
+          font: 'Inter',
+          radius: '0.5rem',
+          style: 'Minimal',
+          layout: 'Standard'
+        };
+        break;
+      case 'Stylish':
+        presetConfig = {
+          ...presetConfig,
+          colors: { primary: '#ec4899', accent: '#8b5cf6' }, // Pink & Purple
+          font: 'Outfit',
+          radius: '1rem',
+          style: 'Playful',
+          layout: 'Standard'
+        };
+        break;
+      case 'Premium':
+        presetConfig = {
+          ...presetConfig,
+          colors: { primary: '#d4af37', accent: '#1f2937' }, // Gold & Dark Gray
+          font: 'Montserrat',
+          radius: '0px',
+          style: 'Corporate',
+          layout: 'Boxed'
+        };
+        break;
+    }
+
+    const finalSettings = { ...settings, ...presetConfig };
+    setSettings(finalSettings);
+    saveThemeSettings(finalSettings);
   };
 
   const resetSettings = () => {
     setSettings(DEFAULT_SETTINGS);
+    saveThemeSettings(DEFAULT_SETTINGS);
   };
 
   // Maintenance Mode Logic
@@ -129,7 +194,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }
 
   return (
-    <ThemeContext.Provider value={{ settings, updateSettings, resetSettings }}>
+    <ThemeContext.Provider value={{ settings, updateSettings, applyPreset, resetSettings, isLoading }}>
       <div className={settings.layout === 'Boxed' ? 'max-w-[1400px] mx-auto shadow-2xl bg-white min-h-screen my-8 rounded-2xl overflow-hidden border border-gray-200' : ''}>
         {children}
       </div>
