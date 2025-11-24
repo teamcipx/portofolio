@@ -113,3 +113,26 @@ export interface Booking {
   status: 'scheduled' | 'completed' | 'cancelled';
   createdAt: string;
 }
+
+// AWS / Theme Settings Interface
+export interface ThemeConfig {
+  colors: {
+    primary: string; // Brand Color
+    accent: string;  // Secondary Color
+  };
+  font: 'Outfit' | 'Inter' | 'Roboto' | 'Playfair Display';
+  radius: '0px' | '0.5rem' | '1rem' | '9999px'; // Square, Small, Large, Pill
+  sections: {
+    showHero: boolean;
+    showServices: boolean;
+    showPortfolio: boolean;
+    showShop: boolean;
+    showTestimonials: boolean;
+    showBlogs: boolean;
+    showContact: boolean;
+  };
+  seo: {
+    maintenanceMode: boolean; // If true, show maintenance screen
+    preventIndexing: boolean; // If true, add noindex meta tag
+  };
+}

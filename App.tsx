@@ -14,38 +14,43 @@ import Admin from './pages/Admin';
 import Login from './pages/Login';
 import BlogPostPage from './pages/BlogPostPage';
 import BookingPage from './pages/BookingPage';
+import AwsPage from './pages/AwsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 const { HashRouter: Router, Routes, Route } = ReactRouterDOM;
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/book" element={<BookingPage />} />
-                <Route path="/blog/:id" element={<BlogPostPage />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/login" element={<Login />} />
-              </Routes>
-            </main>
-            <Footer />
-            <ChatWidget />
-          </div>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <div className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/book" element={<BookingPage />} />
+                  <Route path="/blog/:id" element={<BlogPostPage />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/aws" element={<AwsPage />} />
+                  <Route path="/login" element={<Login />} />
+                </Routes>
+              </main>
+              <Footer />
+              <ChatWidget />
+            </div>
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 
