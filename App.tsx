@@ -1,4 +1,3 @@
-
 import React from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -21,7 +20,8 @@ import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { Loader2 } from 'lucide-react';
 
-const { HashRouter: Router, Routes, Route, Navigate } = ReactRouterDOM;
+// Use BrowserRouter for clean URLs (no /#/)
+const { BrowserRouter: Router, Routes, Route, Navigate } = ReactRouterDOM;
 
 // Wrapper to check if Admin is enabled globally
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {

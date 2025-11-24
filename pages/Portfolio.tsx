@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { getProjects } from '../services/dataService';
 import { Project } from '../types';
@@ -52,7 +51,7 @@ const Portfolio: React.FC = () => {
       <SeoHead 
         title="Portfolio | Ali Hossn - Video Editor & Marketer" 
         description="Explore my professional portfolio featuring SEO results, high-retention video editing, social media branding, and digital marketing campaigns."
-        keywords="video editing portfolio, seo case studies, digital marketing results, branding design, premiere pro expert, after effects portfolio, ali hossn work"
+        keywords="video editing portfolio, seo case studies, digital marketing results, branding design, premiere pro expert, after effects portfolio, ali hossn work, digital marketer bangladesh"
         schema={structuredData}
       />
       <div className="max-w-7xl mx-auto">
