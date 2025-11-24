@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
-import { Calendar, Clock, Facebook, Twitter, Linkedin, Link as LinkIcon, ArrowLeft, Share2 } from 'lucide-react';
-import { getBlogById } from '../services/dataService';
+import { Calendar, Clock, Facebook, Twitter, Linkedin, Link as LinkIcon, ArrowLeft, Share2, User } from 'lucide-react';
+import { getBlogById, getProfileSettings } from '../services/dataService';
 import { BlogPost } from '../types';
 import SeoHead from '../components/SeoHead';
 
@@ -12,14 +13,24 @@ const BlogPostPage: React.FC = () => {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [showShare, setShowShare] = useState(false);
+  const [authorPic, setAuthorPic] = useState("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80");
 
   useEffect(() => {
-    if (id) {
-      getBlogById(id).then(data => {
-        setPost(data);
+    const fetchData = async () => {
+      if (id) {
+        const [blogData, profileData] = await Promise.all([
+          getBlogById(id),
+          getProfileSettings()
+        ]);
+        
+        setPost(blogData);
+        if (profileData && profileData.profilePic) {
+          setAuthorPic(profileData.profilePic);
+        }
         setLoading(false);
-      });
-    }
+      }
+    };
+    fetchData();
   }, [id]);
 
   const handleShare = (platform: string) => {
@@ -54,19 +65,20 @@ const BlogPostPage: React.FC = () => {
     "@type": "BlogPosting",
     "headline": post.title,
     "image": [post.imageUrl],
-    "datePublished": post.date, // Assuming date format is compatible or generic string
+    "datePublished": post.date, 
     "dateModified": post.date,
     "author": [{
       "@type": "Person",
       "name": "Ali Hossn",
-      "url": "https://alihossn.com"
+      "image": authorPic,
+      "url": window.location.origin
     }],
     "publisher": {
       "@type": "Organization",
       "name": "Ali Hossn Digital",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://alihossn.com/logo.png" // Fallback or actual logo URL
+        "url": authorPic
       }
     },
     "description": post.excerpt,
@@ -84,13 +96,13 @@ const BlogPostPage: React.FC = () => {
         schema={structuredData}
       />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <Link to="/" className="inline-flex items-center text-gray-500 hover:text-brand-600 font-medium mb-8 transition">
           <ArrowLeft size={20} className="mr-2" /> Back to Home
         </Link>
 
-        <div className="space-y-6 mb-12">
+        <div className="space-y-6 mb-10">
           <span className="inline-block px-3 py-1 rounded-full bg-brand-50 text-brand-600 text-xs font-bold uppercase tracking-wider">
             {post.category}
           </span>
@@ -99,47 +111,56 @@ const BlogPostPage: React.FC = () => {
             {post.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-6 text-gray-500 text-sm">
-            <span className="flex items-center gap-2"><Calendar size={16} /> {post.date}</span>
-            <span className="flex items-center gap-2"><Clock size={16} /> {post.readTime}</span>
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-6">
+            <div className="flex items-center gap-4">
+               <img src={authorPic} className="w-10 h-10 rounded-full object-cover border border-gray-200" alt="Ali Hossn"/>
+               <div className="text-sm">
+                  <p className="font-bold text-gray-900">Ali Hossn</p>
+                  <div className="flex gap-2 text-gray-500 text-xs">
+                    <span>{post.date}</span>
+                    <span>• {post.readTime}</span>
+                  </div>
+               </div>
+            </div>
             
             {/* Share Dropdown */}
-            <div className="relative">
+            <div className="relative group">
                <button 
                  onClick={() => setShowShare(!showShare)}
-                 className="flex items-center gap-2 text-brand-600 font-bold hover:bg-brand-50 px-3 py-1 rounded-full transition"
+                 className="flex items-center gap-2 text-gray-500 font-bold hover:text-brand-600 transition"
                >
-                 <Share2 size={16}/> Share
+                 <Share2 size={18}/> Share Article
                </button>
                
-               {showShare && (
-                 <div className="absolute top-10 left-0 bg-white shadow-xl rounded-xl p-2 border border-gray-100 flex gap-2 z-20 animate-in fade-in slide-in-from-top-2">
-                    <button onClick={() => handleShare('facebook')} className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><Facebook size={20}/></button>
-                    <button onClick={() => handleShare('twitter')} className="p-2 hover:bg-sky-50 text-sky-500 rounded-lg"><Twitter size={20}/></button>
-                    <button onClick={() => handleShare('linkedin')} className="p-2 hover:bg-blue-50 text-blue-700 rounded-lg"><Linkedin size={20}/></button>
-                    <button onClick={() => handleShare('copy')} className="p-2 hover:bg-gray-50 text-gray-600 rounded-lg"><LinkIcon size={20}/></button>
-                 </div>
-               )}
+               <div className="hidden group-hover:flex absolute top-6 right-0 bg-white shadow-xl rounded-xl p-2 border border-gray-100 gap-2 z-20 animate-in fade-in slide-in-from-top-2">
+                  <button onClick={() => handleShare('facebook')} className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><Facebook size={20}/></button>
+                  <button onClick={() => handleShare('twitter')} className="p-2 hover:bg-sky-50 text-sky-500 rounded-lg"><Twitter size={20}/></button>
+                  <button onClick={() => handleShare('linkedin')} className="p-2 hover:bg-blue-50 text-blue-700 rounded-lg"><Linkedin size={20}/></button>
+                  <button onClick={() => handleShare('copy')} className="p-2 hover:bg-gray-50 text-gray-600 rounded-lg"><LinkIcon size={20}/></button>
+               </div>
             </div>
           </div>
         </div>
 
         {/* Featured Image */}
-        <div className="rounded-3xl overflow-hidden shadow-xl mb-12">
-          <img src={post.imageUrl} alt={post.title} className="w-full h-[400px] object-cover hover:scale-105 transition duration-700"/>
+        <div className="rounded-2xl overflow-hidden shadow-lg mb-12 border border-gray-100">
+          <img src={post.imageUrl} alt={post.title} className="w-full max-h-[500px] object-cover hover:scale-105 transition duration-700"/>
         </div>
 
         {/* Content */}
-        <article className="prose prose-lg prose-indigo max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap">
+        <article className="prose prose-lg prose-indigo max-w-none text-gray-800 leading-relaxed whitespace-pre-wrap font-serif">
            {post.content || post.excerpt}
         </article>
 
-        {/* Author Box */}
-        <div className="mt-16 pt-8 border-t border-gray-100 flex items-center gap-4">
-           <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" className="w-16 h-16 rounded-full object-cover" alt="Ali Hossn"/>
+        {/* Author Box Footer */}
+        <div className="mt-16 p-8 bg-gray-50 rounded-3xl flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+           <div className="w-20 h-20 shrink-0 rounded-full overflow-hidden border-4 border-white shadow-md">
+             <img src={authorPic} className="w-full h-full object-cover" alt="Ali Hossn"/>
+           </div>
            <div>
-              <h4 className="font-bold text-gray-900">Written by Ali Hossn</h4>
-              <p className="text-gray-500 text-sm">Digital Marketer & Video Editor</p>
+              <h4 className="font-bold text-xl text-gray-900 mb-2">Written by Ali Hossn</h4>
+              <p className="text-gray-600 mb-4">Digital Marketer & Video Editor based in Bangladesh. Passionate about helping brands grow through data-driven strategies and compelling storytelling.</p>
+              <Link to="/contact" className="text-brand-600 font-bold hover:underline text-sm">Work with me →</Link>
            </div>
         </div>
 
