@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Download, TrendingUp, Video, Megaphone, Palette, Play, ChevronLeft, ChevronRight, Quote, Calendar, Clock, Star, Briefcase, GraduationCap } from 'lucide-react';
+import { ArrowRight, Download, TrendingUp, Video, Megaphone, Palette, Play, ChevronLeft, ChevronRight, Quote, Calendar, Clock, Star, Briefcase, GraduationCap, Layout, Search } from 'lucide-react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { CV_URL, PROFILE_PIC as DEFAULT_PROFILE_PIC, CLIENT_LOGOS, EXPERIENCE, EDUCATION } from '../constants';
 import { getProjects, getBlogs, getProfileSettings, getProducts, getTestimonials } from '../services/dataService';
@@ -278,206 +278,172 @@ const Home: React.FC = () => {
                 Professional Services
               </p>
               <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-                Comprehensive digital solutions to elevate your brand presence.
+                Comprehensive digital solutions to help you scale.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                { icon: TrendingUp, title: "SEO Optimization", desc: "Rank #1 on Google with data-driven Keyword Research & On-page SEO." },
-                { icon: Video, title: "Video Editing", desc: "Cinematic cuts, motion graphics, and color grading for YouTube & Ads." },
-                { icon: Megaphone, title: "Digital Marketing", desc: "Meta Ads & Google PPC campaigns that drive real ROI and leads." },
-                { icon: Palette, title: "Branding Design", desc: "Logos, Social Media Kits, and Brand Guidelines that stand out." }
-              ].map((service, idx) => (
-                <div key={idx} className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
-                  <div className="w-14 h-14 bg-brand-50 rounded-xl flex items-center justify-center text-brand-600 mb-6 group-hover:bg-brand-600 group-hover:text-white transition-colors">
-                    <service.icon size={28} />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
-                  <p className="text-gray-500 leading-relaxed">
-                    {service.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Testimonials Carousel Section */}
-      {settings.sections.showTestimonials && (
-        <section className="py-24 bg-white relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-brand-50 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent-50 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4">Client Feedback</h2>
-              <p className="text-gray-500 max-w-2xl mx-auto">Trusted by businesses globally. Here's what they say about working with Ali.</p>
-            </div>
-
-            <div className="max-w-5xl mx-auto">
-              {testimonials.length > 0 ? (
-                <div className="relative bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12">
-                  <div className="absolute top-8 left-8 text-brand-200">
-                    <Quote size={64} fill="currentColor" />
-                  </div>
-
-                  <div className="relative z-10">
-                    <div className="min-h-[200px] flex flex-col justify-center items-center text-center">
-                      <p className="text-xl md:text-2xl font-medium text-gray-800 leading-relaxed italic mb-8">
-                        "{testimonials[currentTestimonialIndex].content}"
-                      </p>
-                      <div className="flex items-center justify-center gap-4">
-                         <img 
-                            src={testimonials[currentTestimonialIndex].avatarUrl || "https://via.placeholder.com/100"} 
-                            alt={testimonials[currentTestimonialIndex].name}
-                            className="w-16 h-16 rounded-full object-cover border-4 border-brand-50"
-                         />
-                         <div className="text-left">
-                            <h4 className="font-bold text-gray-900 text-lg">{testimonials[currentTestimonialIndex].name}</h4>
-                            <p className="text-sm text-gray-500">{testimonials[currentTestimonialIndex].role} at <span className="text-brand-600">{testimonials[currentTestimonialIndex].company}</span></p>
-                            <div className="flex text-yellow-400 gap-0.5 mt-1">
-                               {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor"/>)}
-                            </div>
-                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Navigation Buttons */}
-                  <button 
-                    onClick={prevTestimonial}
-                    className="absolute top-1/2 left-4 -translate-y-1/2 bg-white border border-gray-200 p-3 rounded-full hover:bg-gray-50 hover:shadow-lg transition text-gray-600"
-                  >
-                    <ChevronLeft size={24} />
-                  </button>
-                  <button 
-                    onClick={nextTestimonial}
-                    className="absolute top-1/2 right-4 -translate-y-1/2 bg-white border border-gray-200 p-3 rounded-full hover:bg-gray-50 hover:shadow-lg transition text-gray-600"
-                  >
-                    <ChevronRight size={24} />
-                  </button>
-
-                  {/* Dots */}
-                  <div className="flex justify-center gap-2 mt-8">
-                    {testimonials.map((_, idx) => (
-                      <button 
-                        key={idx}
-                        onClick={() => setCurrentTestimonialIndex(idx)}
-                        className={`h-2 rounded-full transition-all duration-300 ${idx === currentTestimonialIndex ? 'w-8 bg-brand-600' : 'w-2 bg-gray-300'}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-12 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
-                   <p className="text-gray-500">No testimonials added yet.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Resume Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-               <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2"><Briefcase className="text-brand-600"/> Experience</h3>
-                  <div className="space-y-8 border-l-2 border-gray-200 ml-3 pl-8 relative">
-                     {EXPERIENCE.map((job) => (
-                        <div key={job.id} className="relative">
-                           <span className="absolute -left-[39px] top-1 w-5 h-5 bg-brand-600 rounded-full border-4 border-white shadow-sm"></span>
-                           <h4 className="text-xl font-bold text-gray-900">{job.role}</h4>
-                           <p className="text-brand-600 font-medium mb-2">{job.company} | {job.period}</p>
-                           <p className="text-gray-600">{job.description}</p>
-                        </div>
-                     ))}
-                  </div>
-               </div>
-               <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2"><GraduationCap className="text-brand-600"/> Education</h3>
-                  <div className="space-y-8 border-l-2 border-gray-200 ml-3 pl-8 relative">
-                     {EDUCATION.map((edu) => (
-                        <div key={edu.id} className="relative">
-                           <span className="absolute -left-[39px] top-1 w-5 h-5 bg-white border-4 border-brand-600 rounded-full shadow-sm"></span>
-                           <h4 className="text-xl font-bold text-gray-900">{edu.degree}</h4>
-                           <p className="text-brand-600 font-medium mb-2">{edu.institution} | {edu.period}</p>
-                           <p className="text-gray-600">{edu.description}</p>
-                        </div>
-                     ))}
-                  </div>
-               </div>
-            </div>
-        </div>
-      </section>
-
-      {/* Latest Blogs Section */}
-      {settings.sections.showBlogs && (
-        <section className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-end mb-12">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900">Latest Insights</h2>
-                <p className="text-gray-500 mt-2">Tips and trends in Digital Marketing & Video Editing</p>
-              </div>
-              <Link to="/blogs" className="hidden md:flex items-center text-brand-600 font-bold hover:gap-2 transition-all">View All <ArrowRight size={18} className="ml-1"/></Link>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-               {recentBlogs.length > 0 ? recentBlogs.map(blog => (
-                  <Link to={`/blog/${blog.id}`} key={blog.id} className="group cursor-pointer">
-                     <div className="relative overflow-hidden rounded-2xl mb-4 h-64">
-                        <img src={blog.imageUrl} className="w-full h-full object-cover transform group-hover:scale-110 transition duration-700" alt={blog.title}/>
-                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-gray-800">
-                           {blog.category}
-                        </div>
-                     </div>
-                     <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-                        <span className="flex items-center gap-1"><Calendar size={12}/> {blog.date}</span>
-                        <span className="flex items-center gap-1"><Clock size={12}/> {blog.readTime}</span>
-                     </div>
-                     <h3 className="text-xl font-bold text-gray-900 group-hover:text-brand-600 transition line-clamp-2 mb-2">{blog.title}</h3>
-                     <p className="text-gray-600 text-sm line-clamp-3">{blog.excerpt}</p>
-                  </Link>
-               )) : (
-                  <div className="col-span-3 text-center py-12 bg-gray-50 rounded-2xl">
-                     <p className="text-gray-500 font-medium">No articles published yet.</p>
-                  </div>
-               )}
+              {/* Service 1 */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition duration-300">
+                <div className="w-14 h-14 bg-brand-100 rounded-xl flex items-center justify-center text-brand-600 mb-6">
+                  <Search size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">SEO Optimization</h3>
+                <p className="text-gray-500 mb-6">
+                  Rank higher on Google with data-driven SEO strategies. I specialize in Keyword Research, On-Page SEO, and Technical Audits.
+                </p>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-brand-500 rounded-full"></div> Keyword Research</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-brand-500 rounded-full"></div> On-Page & Off-Page</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-brand-500 rounded-full"></div> Technical Audit</li>
+                </ul>
+              </div>
+
+              {/* Service 2 */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition duration-300 transform md:-translate-y-4">
+                <div className="w-14 h-14 bg-accent-100 rounded-xl flex items-center justify-center text-accent-600 mb-6">
+                  <Video size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Video Editing</h3>
+                <p className="text-gray-500 mb-6">
+                  Professional editing for YouTube, Reels, and Ads. I use Premiere Pro & After Effects to create engaging visual stories.
+                </p>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-accent-500 rounded-full"></div> YouTube Videos</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-accent-500 rounded-full"></div> Reels & Shorts</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-accent-500 rounded-full"></div> Motion Graphics</li>
+                </ul>
+              </div>
+
+              {/* Service 3 */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition duration-300">
+                <div className="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center text-pink-600 mb-6">
+                  <Palette size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Branding & Design</h3>
+                <p className="text-gray-500 mb-6">
+                  Stand out with unique brand identity designs, social media graphics, and thumbnails that get clicks.
+                </p>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-pink-500 rounded-full"></div> Logo Design</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-pink-500 rounded-full"></div> Social Media Posts</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-2 h-2 bg-pink-500 rounded-full"></div> YouTube Thumbnails</li>
+                </ul>
+              </div>
             </div>
           </div>
         </section>
+      )}
+
+      {/* Featured Projects Section */}
+      {settings.sections.showPortfolio && featuredProjects.length > 0 && (
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+             <div className="flex justify-between items-end mb-12">
+                <div>
+                   <h2 className="text-3xl font-bold text-gray-900">Featured Projects</h2>
+                   <p className="text-gray-500 mt-2">Recent work highlights.</p>
+                </div>
+                <Link to="/portfolio" className="hidden md:flex items-center gap-2 text-brand-600 font-bold hover:underline">View All <ArrowRight size={16}/></Link>
+             </div>
+             
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {featuredProjects.map((project) => (
+                   <Link to={`/work/${project.id}`} key={project.id} className="group block">
+                      <div className="rounded-2xl overflow-hidden aspect-video mb-4 relative">
+                         <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500"/>
+                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition"/>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-brand-600 transition">{project.title}</h3>
+                      <p className="text-sm text-gray-500">{project.category}</p>
+                   </Link>
+                ))}
+             </div>
+             
+             <div className="mt-8 text-center md:hidden">
+                <Link to="/portfolio" className="inline-flex items-center gap-2 text-brand-600 font-bold hover:underline">View All Projects <ArrowRight size={16}/></Link>
+             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Testimonials Section */}
+      {settings.sections.showTestimonials && testimonials.length > 0 && (
+        <section className="py-24 bg-gray-900 text-white relative overflow-hidden">
+           <div className="absolute inset-0 bg-dot-pattern opacity-10"></div>
+           <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
+              <Quote size={48} className="mx-auto text-brand-500 mb-8 opacity-50"/>
+              
+              <div className="min-h-[200px]">
+                 {testimonials.map((t, idx) => (
+                    <div key={t.id} className={`${idx === currentTestimonialIndex ? 'block animate-in fade-in slide-in-from-bottom-4 duration-500' : 'hidden'}`}>
+                       <p className="text-2xl md:text-4xl font-medium leading-relaxed mb-8">"{t.content}"</p>
+                       <div className="flex items-center justify-center gap-4">
+                          <img src={t.avatarUrl} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-brand-500"/>
+                          <div className="text-left">
+                             <h4 className="font-bold text-lg">{t.name}</h4>
+                             <p className="text-gray-400 text-sm">{t.role}, {t.company}</p>
+                          </div>
+                       </div>
+                    </div>
+                 ))}
+              </div>
+
+              {testimonials.length > 1 && (
+                 <div className="flex justify-center gap-4 mt-12">
+                    <button onClick={prevTestimonial} className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"><ChevronLeft size={24}/></button>
+                    <button onClick={nextTestimonial} className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"><ChevronRight size={24}/></button>
+                 </div>
+              )}
+           </div>
+        </section>
+      )}
+      
+      {/* Blog Preview */}
+      {settings.sections.showBlogs && recentBlogs.length > 0 && (
+         <section className="py-20 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4">
+               <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Latest from the Blog</h2>
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {recentBlogs.map(blog => (
+                     <Link to={`/blog/${blog.id}`} key={blog.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition group">
+                        <div className="h-48 overflow-hidden">
+                           <img src={blog.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition duration-500"/>
+                        </div>
+                        <div className="p-6">
+                           <span className="text-xs font-bold text-brand-600 uppercase mb-2 block">{blog.category}</span>
+                           <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-brand-600 transition">{blog.title}</h3>
+                           <p className="text-gray-500 text-sm line-clamp-2">{blog.excerpt}</p>
+                           <div className="mt-4 flex items-center text-xs text-gray-400 gap-3">
+                              <span className="flex items-center gap-1"><Calendar size={12}/> {blog.date}</span>
+                              <span className="flex items-center gap-1"><Clock size={12}/> {blog.readTime}</span>
+                           </div>
+                        </div>
+                     </Link>
+                  ))}
+               </div>
+            </div>
+         </section>
       )}
 
       {/* CTA Section */}
       {settings.sections.showContact && (
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gray-900 rounded-[2.5rem] p-12 md:p-20 text-center relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-500 rounded-full filter blur-[100px] opacity-20"></div>
-              
-              <div className="relative z-10">
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to scale your business?</h2>
-                <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-                  Let's collaborate to create high-impact videos and marketing campaigns that drive real results.
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <Link to="/contact" className="px-8 py-4 bg-white text-gray-900 rounded-xl font-bold text-lg hover:bg-gray-100 transition hover:-translate-y-1 shadow-lg">
-                     Start a Project
-                  </Link>
-                  <Link to="/shop" className="px-8 py-4 bg-transparent border border-gray-700 text-white rounded-xl font-bold text-lg hover:bg-gray-800 transition">
-                     Browse Shop
-                  </Link>
-                </div>
+        <section className="py-24 bg-white relative overflow-hidden">
+           <div className="max-w-5xl mx-auto px-4 text-center relative z-10">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">Ready to Scale Your Brand?</h2>
+              <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto">Whether you need better SEO rankings, high-retention videos, or a brand makeover, I'm here to help.</p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                 <Link to="/contact" className="px-8 py-4 bg-brand-600 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-brand-700 hover:-translate-y-1 transition transform">
+                    Start a Project
+                 </Link>
+                 <Link to="/book" className="px-8 py-4 bg-white text-gray-900 border-2 border-gray-200 text-lg font-bold rounded-xl hover:bg-gray-50 hover:border-gray-300 transition">
+                    Book a Call
+                 </Link>
               </div>
-            </div>
-          </div>
+           </div>
         </section>
       )}
+
     </div>
   );
 };

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Lock, ArrowLeft, Mail, Loader2, UserPlus, KeyRound } from 'lucide-react';
+import { Lock, ArrowLeft, Mail, Loader2, UserPlus, KeyRound, CheckCircle } from 'lucide-react';
 import SeoHead from '../components/SeoHead';
 
 const { useNavigate, Link } = ReactRouterDOM;
@@ -206,6 +206,5 @@ const Login: React.FC = () => {
     </div>
   );
 };
-import { CheckCircle } from 'lucide-react';
 
 export default Login;
