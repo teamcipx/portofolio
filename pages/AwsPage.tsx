@@ -1,14 +1,14 @@
 
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { Settings, Layout, Type, Palette, Lock, Save, Globe, Eye, EyeOff, ShieldAlert, CheckCircle, Navigation, Monitor, FileText, ToggleLeft, ToggleRight, Power, Zap, Star, Briefcase, MousePointer2 } from 'lucide-react';
+import { Settings, Layout, Type, Palette, Lock, Save, Globe, Eye, EyeOff, ShieldAlert, CheckCircle, Navigation, Monitor, FileText, ToggleLeft, ToggleRight, Power, Zap, Star, Briefcase, MousePointer2, Megaphone } from 'lucide-react';
 import SeoHead from '../components/SeoHead';
 
 const AwsPage: React.FC = () => {
   const { settings, updateSettings, applyPreset, resetSettings } = useTheme();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'presets' | 'theme' | 'layout' | 'nav' | 'seo' | 'system'>('presets');
+  const [activeTab, setActiveTab] = useState<'presets' | 'theme' | 'layout' | 'nav' | 'announcement' | 'seo' | 'system'>('presets');
 
   // Hardcoded Super Admin Password for AWS Panel
   const AWS_PASSWORD = "admin123";
@@ -92,6 +92,7 @@ const AwsPage: React.FC = () => {
                 { id: 'theme', icon: Palette, label: 'Colors & Fonts' },
                 { id: 'layout', icon: Layout, label: 'Layout & Pages' },
                 { id: 'nav', icon: Navigation, label: 'Navigation' },
+                { id: 'announcement', icon: Megaphone, label: 'Announcement' },
                 { id: 'seo', icon: Globe, label: 'SEO & Meta' },
                 { id: 'system', icon: ShieldAlert, label: 'System Control' },
               ].map((item) => (
@@ -323,6 +324,51 @@ const AwsPage: React.FC = () => {
                           </button>
                        </div>
                     ))}
+                 </div>
+              </div>
+            )}
+
+            {/* Announcement Bar Settings */}
+            {activeTab === 'announcement' && (
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 animate-in fade-in">
+                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><Megaphone/> Announcement Bar</h2>
+                 <p className="text-gray-500 mb-8">Configure the top notification bar for sales and updates.</p>
+
+                 <div className="space-y-6">
+                    <div className="flex items-center justify-between p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                       <div>
+                          <h4 className="font-bold text-gray-900">Enable Banner</h4>
+                          <p className="text-sm text-gray-500">Show the bar at the top of the site</p>
+                       </div>
+                       <button 
+                             onClick={() => updateSettings({ announcement: { ...settings.announcement, enabled: !settings.announcement?.enabled } })}
+                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.announcement?.enabled ? 'bg-green-500' : 'bg-gray-300'}`}
+                          >
+                             <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${settings.announcement?.enabled ? 'translate-x-6' : 'translate-x-1'}`}/>
+                       </button>
+                    </div>
+
+                    <div>
+                       <label className="block text-sm font-bold text-gray-700 mb-2">Banner Text</label>
+                       <input 
+                         type="text" 
+                         value={settings.announcement?.text || ''}
+                         onChange={(e) => updateSettings({ announcement: { ...settings.announcement, text: e.target.value } })}
+                         className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 ring-brand-500 outline-none"
+                         placeholder="e.g. Special Offer: 50% Off Today!"
+                       />
+                    </div>
+
+                    <div>
+                       <label className="block text-sm font-bold text-gray-700 mb-2">Link URL (Optional)</label>
+                       <input 
+                         type="text" 
+                         value={settings.announcement?.link || ''}
+                         onChange={(e) => updateSettings({ announcement: { ...settings.announcement, link: e.target.value } })}
+                         className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 ring-brand-500 outline-none"
+                         placeholder="e.g. /shop or https://..."
+                       />
+                    </div>
                  </div>
               </div>
             )}

@@ -76,6 +76,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      await auth.sendPasswordResetEmail(email);
+    } catch (error: any) {
+      console.error("Password Reset failed", error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     await auth.signOut();
     setUser(null);
@@ -84,7 +93,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAdmin = user?.role === UserRole.ADMIN;
 
   return (
-    <AuthContext.Provider value={{ user, loginWithGoogle, loginWithEmail, registerWithEmail, logout, isAdmin, loading }}>
+    <AuthContext.Provider value={{ user, loginWithGoogle, loginWithEmail, registerWithEmail, resetPassword, logout, isAdmin, loading }}>
       {children}
     </AuthContext.Provider>
   );

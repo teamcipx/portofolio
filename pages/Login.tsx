@@ -1,13 +1,14 @@
+
 import React, { useEffect, useState } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Lock, ArrowLeft, Mail, Loader2, UserPlus } from 'lucide-react';
+import { Lock, ArrowLeft, Mail, Loader2, UserPlus, KeyRound } from 'lucide-react';
 import SeoHead from '../components/SeoHead';
 
 const { useNavigate, Link } = ReactRouterDOM;
 
 const Login: React.FC = () => {
-  const { loginWithGoogle, loginWithEmail, registerWithEmail, user, isAdmin } = useAuth();
+  const { loginWithGoogle, loginWithEmail, registerWithEmail, resetPassword, user, isAdmin } = useAuth();
   const navigate = useNavigate();
   
   const [isLoginMode, setIsLoginMode] = useState(true);
@@ -15,6 +16,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -30,6 +32,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
+    setSuccessMessage(null);
     try {
       if (isLoginMode) {
         await loginWithEmail(email, password);
@@ -39,7 +42,31 @@ const Login: React.FC = () => {
       // Navigation handled by useEffect
     } catch (error: any) {
       setIsSubmitting(false);
-      setErrorMessage(error.message || "Authentication failed");
+      
+      // Smart Error Handling
+      if (error.message.includes("already registered")) {
+        setErrorMessage(error.message);
+        setTimeout(() => {
+            setIsLoginMode(true); // Auto Switch to Login
+            setErrorMessage("Account exists. Please Login.");
+        }, 1500);
+      } else {
+        setErrorMessage(error.message || "Authentication failed");
+      }
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+        setErrorMessage("Please enter your email address first.");
+        return;
+    }
+    try {
+        await resetPassword(email);
+        setSuccessMessage("Password reset email sent! Check your inbox.");
+        setErrorMessage(null);
+    } catch (error: any) {
+        setErrorMessage(error.message);
     }
   };
 
@@ -49,7 +76,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <SeoHead title="Login | Siam Hasan" description="Login to access your account or admin dashboard." />
+      <SeoHead title="Login | Ali Hossn" description="Login to access your account or admin dashboard." />
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Link to="/" className="flex justify-center mb-6 text-gray-500 hover:text-brand-600 transition">
            <ArrowLeft className="mr-2" /> Back to Home
@@ -71,8 +98,14 @@ const Login: React.FC = () => {
         <div className="bg-white py-8 px-4 shadow-xl rounded-2xl sm:px-10 border border-gray-100">
           
           {errorMessage && (
-            <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
-              {errorMessage}
+            <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 flex items-center gap-2">
+              <span className="font-bold">Error:</span> {errorMessage}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="mb-4 p-3 bg-green-50 text-green-600 text-sm rounded-lg border border-green-100 flex items-center gap-2">
+              <CheckCircle size={16}/> {successMessage}
             </div>
           )}
 
@@ -97,9 +130,16 @@ const Login: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  {isLoginMode && (
+                      <button type="button" onClick={handleForgotPassword} className="text-xs text-brand-600 hover:underline font-bold">
+                          Forgot Password?
+                      </button>
+                  )}
+              </div>
               <div className="mt-1">
                 <input
                   id="password"
@@ -128,7 +168,7 @@ const Login: React.FC = () => {
           <div className="mt-6">
              <button 
                 type="button"
-                onClick={() => { setIsLoginMode(!isLoginMode); setErrorMessage(null); }}
+                onClick={() => { setIsLoginMode(!isLoginMode); setErrorMessage(null); setSuccessMessage(null); }}
                 className="w-full text-center text-sm text-brand-600 hover:text-brand-500 font-medium"
              >
                 {isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Login"}
@@ -166,5 +206,6 @@ const Login: React.FC = () => {
     </div>
   );
 };
+import { CheckCircle } from 'lucide-react';
 
 export default Login;

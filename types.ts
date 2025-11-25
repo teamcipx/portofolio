@@ -1,5 +1,4 @@
 
-
 export interface Project {
   id: string;
   title: string;
@@ -53,6 +52,7 @@ export interface AuthContextType {
   loginWithGoogle: () => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
   registerWithEmail: (email: string, password: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>; // Added Reset Password
   logout: () => Promise<void>;
   isAdmin: boolean;
   loading: boolean;
@@ -122,7 +122,7 @@ export interface Booking {
 
 // AWS / Theme Settings Interface
 export interface ThemeConfig {
-  preset: 'Custom' | 'Tech' | 'Modern' | 'Stylish' | 'Premium'; // New Preset Field
+  preset: 'Custom' | 'Tech' | 'Modern' | 'Stylish' | 'Premium'; 
   colors: {
     primary: string; // Brand Color
     accent: string;  // Secondary Color
@@ -154,10 +154,16 @@ export interface ThemeConfig {
     blogEnabled: boolean;
   };
   seo: {
-    maintenanceMode: boolean; // If true, show maintenance screen
-    preventIndexing: boolean; // If true, add noindex meta tag
+    maintenanceMode: boolean; 
+    preventIndexing: boolean; 
   };
   system: {
-    adminEnabled: boolean; // Master switch to enable/disable admin panel access
-  }
+    adminEnabled: boolean; 
+  };
+  // New Announcement Bar Settings
+  announcement: {
+    enabled: boolean;
+    text: string;
+    link?: string;
+  };
 }

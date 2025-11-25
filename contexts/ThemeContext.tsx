@@ -52,29 +52,57 @@ const DEFAULT_SETTINGS: ThemeConfig = {
   },
   system: {
     adminEnabled: true,
+  },
+  announcement: {
+    enabled: true,
+    text: "Special Offer: Get 20% OFF on all Video Editing packages this week!",
+    link: "/shop"
   }
 };
+
+const CACHE_KEY = 'aws_theme_cache_v3';
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [settings, setSettings] = useState<ThemeConfig>(DEFAULT_SETTINGS);
-  const [isLoading, setIsLoading] = useState(true);
+  // Initialize state from LocalStorage if available to prevent flash
+  const [settings, setSettings] = useState<ThemeConfig>(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      return cached ? { ...DEFAULT_SETTINGS, ...JSON.parse(cached) } : DEFAULT_SETTINGS;
+    } catch (e) {
+      return DEFAULT_SETTINGS;
+    }
+  });
+  
+  // If we loaded from cache, we aren't "loading" in a blocking sense, 
+  // but we still fetch fresh data in background.
+  const [isLoading, setIsLoading] = useState(!localStorage.getItem(CACHE_KEY));
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Load from Firebase on Mount
+  // Load from Firebase on Mount (Background Sync)
   useEffect(() => {
     const loadSettings = async () => {
       const cloudSettings = await getThemeSettings();
       if (cloudSettings) {
-        setSettings({ ...DEFAULT_SETTINGS, ...cloudSettings });
+        setSettings(prev => {
+           const merged = { ...DEFAULT_SETTINGS, ...cloudSettings };
+           // Update cache immediately
+           localStorage.setItem(CACHE_KEY, JSON.stringify(merged));
+           return merged;
+        });
       }
       setIsLoading(false);
     };
     loadSettings();
   }, []);
+
+  // Persist to LocalStorage whenever settings change locally
+  useEffect(() => {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(settings));
+  }, [settings]);
 
   // Apply Changes to DOM
   useEffect(() => {
@@ -115,9 +143,11 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, [location, settings, navigate]);
 
   const updateSettings = (newSettings: Partial<ThemeConfig>) => {
-    const updated = { ...settings, ...newSettings, preset: 'Custom' as const };
-    setSettings(updated);
-    saveThemeSettings(updated); // Sync to Cloud
+    setSettings(prev => {
+        const updated = { ...prev, ...newSettings, preset: 'Custom' as const };
+        saveThemeSettings(updated); // Sync to Cloud
+        return updated;
+    });
   };
 
   const applyPreset = (preset: ThemeConfig['preset']) => {
@@ -166,9 +196,11 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         break;
     }
 
-    const finalSettings = { ...settings, ...presetConfig };
-    setSettings(finalSettings);
-    saveThemeSettings(finalSettings);
+    setSettings(prev => {
+        const finalSettings = { ...prev, ...presetConfig };
+        saveThemeSettings(finalSettings);
+        return finalSettings;
+    });
   };
 
   const resetSettings = () => {
