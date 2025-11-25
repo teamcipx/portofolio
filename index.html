@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- SEO & Meta Tags (Dynamic via SeoHead.tsx usually, but these are fallbacks) -->
+    <!-- SEO & Meta Tags -->
     <title>Ali Hossn | Digital Marketer & Video Editor</title>
     
-    <!-- Google Fonts: Pre-load all supported fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;700&family=Lato:wght@300;400;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;700&family=Lato:wght@300;400;700&family=Open+Sans:wght@300;400;600;700&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,7 +18,6 @@
         theme: {
           extend: {
             colors: {
-              // Using CSS variables for Dynamic Theming
               brand: {
                 50: 'color-mix(in srgb, var(--color-brand) 5%, white)',
                 100: 'color-mix(in srgb, var(--color-brand) 10%, white)',
@@ -44,7 +43,7 @@
               '3xl': 'calc(var(--radius-global) + 0.5rem)',
             },
             fontFamily: {
-              sans: ['var(--font-family)', 'sans-serif'], // Fallback handled in ThemeContext
+              sans: ['var(--font-family)', 'sans-serif'],
             },
             animation: {
               'blob': 'blob 7s infinite',
@@ -85,7 +84,6 @@
 
     <style>
       :root {
-        /* Default Initial Values - Overridden by ThemeContext */
         --color-brand: #d946ef;
         --color-accent: #8b5cf6;
         --radius-global: 0.75rem;
@@ -97,15 +95,12 @@
         color: #0f172a; 
       }
       
-      /* Smooth scrolling */
       html { scroll-behavior: smooth; }
 
-      /* Custom scrollbar */
       ::-webkit-scrollbar { width: 8px; }
       ::-webkit-scrollbar-track { background: #f1f1f1; }
       ::-webkit-scrollbar-thumb { background: var(--color-brand); border-radius: 4px; }
       
-      /* Glassmorphism Utilities */
       .glass-nav {
         background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(20px);
